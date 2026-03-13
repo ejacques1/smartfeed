@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartFeed — Know Your Food Zone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:    #1a7a4a;
+      --green-lt: #24a866;
+      --green-xlt:#d4f5e4;
+      --amber:    #e6900a;
+      --amber-lt: #fff3d6;
+      --red:      #c0392b;
+      --red-lt:   #fde8e6;
+      --ink:      #0f1f14;
+      --mist:     #f2f7f4;
+      --white:    #ffffff;
+      --border:   #d5e8dc;
+      --radius:   16px;
+      --shadow:   0 4px 24px rgba(15,31,20,.10);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--mist);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--ink);
+      color: var(--white);
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* animated grain overlay */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* big decorative circle */
+    .hero-circle {
+      position: absolute;
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #1a7a4a33 0%, transparent 70%);
+      top: -200px; right: -200px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    nav {
+      position: relative; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 48px;
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800; font-size: 1.5rem;
+      letter-spacing: -0.5px;
+      color: var(--white);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green-lt); display: inline-block; }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      color: rgba(255,255,255,.6);
+      text-decoration: none; font-size: .9rem; font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .btn-nav {
+      background: var(--green); color: var(--white);
+      border: none; padding: 10px 22px; border-radius: 100px;
+      font-family: 'DM Sans', sans-serif; font-size: .88rem; font-weight: 500;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-nav:hover { background: var(--green-lt); }
+
+    .hero-body {
+      position: relative; z-index: 5;
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 60px 24px 80px;
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+      border-radius: 100px; padding: 6px 16px;
+      font-size: .78rem; font-weight: 500; letter-spacing: .04em;
+      text-transform: uppercase; color: var(--green-lt);
+      margin-bottom: 28px;
+      animation: fadeUp .6s ease both;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -1.5px;
+      max-width: 760px;
+      animation: fadeUp .6s .1s ease both;
+    }
+    h1 span { color: var(--green-lt); }
+
+    .hero-sub {
+      margin-top: 20px;
+      max-width: 500px;
+      font-size: 1.1rem;
+      font-weight: 300;
+      line-height: 1.6;
+      color: rgba(255,255,255,.65);
+      animation: fadeUp .6s .2s ease both;
+    }
+
+    /* ── MAIN CTA CARD ── */
+    .cta-card {
+      margin-top: 48px;
+      background: var(--white);
+      border-radius: 24px;
+      padding: 32px;
+      width: 100%; max-width: 520px;
+      box-shadow: 0 32px 80px rgba(0,0,0,.4);
+      animation: fadeUp .6s .3s ease both;
+      text-align: left;
+    }
+    .cta-card-label {
+      font-size: .78rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+    .cta-card h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.35rem; font-weight: 700;
+      color: var(--ink); margin-bottom: 20px;
+      line-height: 1.3;
+    }
+
+    .location-row {
+      display: flex; gap: 10px;
+    }
+    .location-input {
+      flex: 1;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .2s;
+    }
+    .location-input:focus { border-color: var(--green); }
+    .location-input::placeholder { color: #aabab0; }
+
+    .btn-detect {
+      background: var(--green);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      padding: 13px 20px;
+      font-family: 'Syne', sans-serif;
+      font-size: .9rem; font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .2s, transform .1s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .btn-detect:hover { background: var(--green-lt); transform: translateY(-1px); }
+    .btn-detect:active { transform: translateY(0); }
+
+    .divider-row {
+      display: flex; align-items: center; gap: 12px;
+      margin: 16px 0;
+    }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-text { font-size: .78rem; color: #aabab0; font-weight: 500; }
+
+    .btn-gps {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      background: var(--mist);
+      border-radius: 12px;
+      padding: 13px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .92rem; font-weight: 500;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: border-color .2s, background .2s;
+    }
+    .btn-gps:hover { border-color: var(--green); background: var(--green-xlt); }
+    .icon { font-size: 1.1rem; }
+
+    /* ── RESULT SECTION ── */
+    #result-section {
+      display: none;
+      padding: 60px 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .zone-banner {
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin-bottom: 32px;
+      display: flex; align-items: center; gap: 20px;
+      animation: fadeUp .5s ease both;
+    }
+    .zone-banner.desert  { background: var(--red-lt);   border: 1.5px solid #f5c0bb; }
+    .zone-banner.swamp   { background: var(--amber-lt); border: 1.5px solid #f5d88a; }
+    .zone-banner.healthy { background: var(--green-xlt);border: 1.5px solid #a8e6c5; }
+
+    .zone-emoji { font-size: 3rem; flex-shrink: 0; }
+    .zone-text h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem; font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .zone-text p { font-size: .92rem; line-height: 1.55; color: #3a4a3f; max-width: 540px; }
+
+    /* score bar */
+    .score-row {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 16px;
+      margin-bottom: 36px;
+      animation: fadeUp .5s .1s ease both;
+    }
+    .score-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+    }
+    .score-card .num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem; font-weight: 800;
+      color: var(--green);
+    }
+    .score-card .num.bad  { color: var(--red); }
+    .score-card .num.warn { color: var(--amber); }
+    .score-card .lbl { font-size: .78rem; color: #6a8070; margin-top: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* places grid */
+    .places-header {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem; font-weight: 700;
+      margin-bottom: 18px;
+      animation: fadeUp .5s .15s ease both;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .places-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .place-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      cursor: pointer;
+      transition: box-shadow .2s, transform .2s, border-color .2s;
+      animation: fadeUp .5s ease both;
+    }
+    .place-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); border-color: var(--green); }
+
+    .place-type {
+      font-size: .72rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--green);
+      margin-bottom: 8px;
+    }
+    .place-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem; font-weight: 700; margin-bottom: 6px;
+    }
+    .place-dist { font-size: .85rem; color: #6a8070; margin-bottom: 12px; }
+    .place-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag {
+      font-size: .72rem; font-weight: 500;
+      background: var(--mist); border: 1px solid var(--border);
+      border-radius: 100px; padding: 3px 10px; color: #3a4a3f;
+    }
+    .tag.ebt { background: var(--green-xlt); border-color: #a8e6c5; color: var(--green); }
+    .btn-directions {
+      margin-top: 14px;
+      width: 100%;
+      background: var(--green);
+      color: var(--white);
+      border: none; border-radius: 10px;
+      padding: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: .88rem; font-weight: 500;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-directions:hover { background: var(--green-lt); }
+
+    /* suggest */
+    .suggest-banner {
+      background: var(--ink); color: var(--white);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      animation: fadeUp .5s .2s ease both;
+    }
+    .suggest-banner p { font-size: .95rem; color: rgba(255,255,255,.7); margin-top: 6px; }
+    .suggest-banner h4 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+    .btn-suggest {
+      background: var(--green-lt); color: var(--white);
+      border: none; border-radius: 12px; padding: 12px 22px;
+      font-family: 'Syne', sans-serif; font-size: .88rem; font-weight: 700;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: background .2s;
+    }
+    .btn-suggest:hover { background: var(--green); }
+
+    /* ── HOW IT WORKS ── */
+    .section { padding: 80px 24px; max-width: 900px; margin: 0 auto; }
+    .section-label {
+      font-size: .78rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--green); margin-bottom: 12px;
+    }
+    .section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+      font-weight: 800; margin-bottom: 48px;
+      line-height: 1.15; letter-spacing: -.5px;
+    }
+    .steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 20px; }
+    .step-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem; font-weight: 800;
+      color: var(--green-xlt);
+      margin-bottom: 14px;
+    }
+    .step-card h4 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .step-card p  { font-size: .88rem; line-height: 1.6; color: #4a6055; }
+
+    /* ── STATS STRIP ── */
+    .stats-strip {
+      background: var(--ink); color: var(--white);
+      padding: 48px 24px;
+    }
+    .stats-inner {
+      max-width: 900px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+      gap: 32px; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.6rem; font-weight: 800; color: var(--green-lt);
+    }
+    .stat-desc { font-size: .85rem; color: rgba(255,255,255,.55); margin-top: 6px; line-height: 1.45; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink); color: rgba(255,255,255,.4);
+      border-top: 1px solid rgba(255,255,255,.06);
+      padding: 32px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: .8rem;
+    }
+    footer .logo { font-size: 1.1rem; }
+
+    /* ── MODAL (login / suggest) ── */
+    .modal-bg {
+      display: none; position: fixed; inset: 0;
+      background: rgba(15,31,20,.6); backdrop-filter: blur(4px);
+      z-index: 100; align-items: center; justify-content: center;
+    }
+    .modal-bg.open { display: flex; }
+    .modal {
+      background: var(--white); border-radius: 24px;
+      padding: 36px; width: 100%; max-width: 440px;
+      box-shadow: 0 32px 80px rgba(0,0,0,.3);
+      animation: fadeUp .3s ease both;
+    }
+    .modal h3 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
+    .modal p  { font-size: .88rem; color: #6a8070; margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: .8rem; font-weight: 600; margin-bottom: 6px; color: #3a4a3f; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-family: 'DM Sans', sans-serif; font-size: .92rem;
+      outline: none; transition: border-color .2s; color: var(--ink);
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--green); }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-primary {
+      flex: 1; background: var(--green); color: var(--white);
+      border: none; border-radius: 10px; padding: 12px;
+      font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 700;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-primary:hover { background: var(--green-lt); }
+    .btn-secondary {
+      flex: 1; background: var(--mist); color: var(--ink);
+      border: 1.5px solid var(--border); border-radius: 10px; padding: 12px;
+      font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 500;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-secondary:hover { background: var(--border); }
+
+    /* loading spinner */
+    .spinner {
+      display: none;
+      width: 22px; height: 22px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-top-color: var(--white);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    /* toast */
+    .toast {
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--ink); color: var(--white);
+      padding: 12px 24px; border-radius: 100px;
+      font-size: .88rem; font-weight: 500;
+      box-shadow: var(--shadow);
+      transition: transform .3s ease;
+      z-index: 200;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* responsive */
+    @media (max-width: 640px) {
+      nav { padding: 20px 20px; }
+      .nav-links { display: none; }
+      h1 { font-size: 2.4rem; }
+      .cta-card { padding: 24px 20px; }
+      .location-row { flex-direction: column; }
+      .score-row { grid-template-columns: 1fr 1fr; }
+      .suggest-banner { flex-direction: column; }
+      footer { flex-direction: column; gap: 12px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════ HERO ════════ -->
+<section class="hero">
+  <div class="hero-circle"></div>
+
+  <nav>
+    <div class="logo"><span class="logo-dot"></span>SmartFeed</div>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#why">Why it matters</a>
+    </div>
+    <button class="btn-nav" onclick="openModal('login-modal')">Log in</button>
+  </nav>
+
+  <div class="hero-body">
+    <div class="badge">🌿 Powered by USDA Food Access Data</div>
+    <h1>Are you in a <span>food desert</span><br>or food swamp?</h1>
+    <p class="hero-sub">SmartFeed uses your GPS and real USDA data to classify your food environment — then finds healthier options nearby, filtered by your budget.</p>
+
+    <!-- MAIN ACTION CARD -->
+    <div class="cta-card">
+      <div class="cta-card-label">🔍 Check Your Zone</div>
+      <h2>Enter your address or use your current location</h2>
+
+      <div class="location-row">
+        <input class="location-input" id="address-input" type="text" placeholder="123 Main St, Brooklyn, NY…" />
+        <button class="btn-detect" id="detect-btn" onclick="detectZone()">
+          <div class="spinner" id="btn-spinner"></div>
+          <span id="btn-text">Detect</span>
+        </button>
+      </div>
+
+      <div class="divider-row">
+        <div class="divider-line"></div>
+        <div class="divider-text">or</div>
+        <div class="divider-line"></div>
+      </div>
+
+      <button class="btn-gps" onclick="useGPS()">
+        <span class="icon">📍</span> Use My Current Location
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ RESULTS ════════ -->
+<section id="result-section">
+
+  <div id="zone-banner" class="zone-banner healthy">
+    <div class="zone-emoji" id="zone-emoji">🌿</div>
+    <div class="zone-text">
+      <h3 id="zone-title">Zone Detected</h3>
+      <p id="zone-desc">Your food environment description will appear here.</p>
+    </div>
+  </div>
+
+  <div class="score-row">
+    <div class="score-card">
+      <div class="num" id="score-access">—</div>
+      <div class="lbl">Supermarket Access</div>
+    </div>
+    <div class="score-card">
+      <div class="num" id="score-fastfood">—</div>
+      <div class="lbl">Fast Food Density</div>
+    </div>
+    <div class="score-card">
+      <div class="num" id="score-health">—</div>
+      <div class="lbl">Health Score</div>
+    </div>
+  </div>
+
+  <div class="places-header">🥗 Healthy Options Nearby</div>
+  <div class="places-grid" id="places-grid"></div>
+
+  <div class="suggest-banner">
+    <div>
+      <h4>Know a hidden healthy gem?</h4>
+      <p>Help your community — suggest a spot we're missing.</p>
+    </div>
+    <button class="btn-suggest" onclick="openModal('suggest-modal')">+ Add a Place</button>
+  </div>
+</section>
+
+<!-- ════════ HOW IT WORKS ════════ -->
+<section class="section" id="how">
+  <div class="section-label">The Process</div>
+  <h2>From one tap to<br>your next healthy meal</h2>
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <h4>Drop Your Location</h4>
+      <p>Enter an address or tap to share your GPS. No account needed to start.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <h4>We Classify Your Zone</h4>
+      <p>SmartFeed checks your census tract against USDA Food Access Research Atlas data in real time.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <h4>See What's Near You</h4>
+      <p>Get a ranked list of grocery stores, farmers markets, and healthy restaurants filtered by distance and budget.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">04</div>
+      <h4>Go & Eat Better</h4>
+      <p>One tap for directions. Save favorites. Log in to track your preferences over time.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ STATS ════════ -->
+<div class="stats-strip" id="why">
+  <div class="stats-inner">
+    <div>
+      <div class="stat-num">13.5M</div>
+      <div class="stat-desc">Americans in food deserts with low access to healthy food</div>
+    </div>
+    <div>
+      <div class="stat-num">49.9%</div>
+      <div class="stat-desc">Obesity rate among Black adults — nearly double the national average for Asian adults</div>
+    </div>
+    <div>
+      <div class="stat-num">$5B+</div>
+      <div class="stat-desc">Spent annually marketing unhealthy food to Black and Hispanic youth</div>
+    </div>
+    <div>
+      <div class="stat-num">2×</div>
+      <div class="stat-desc">More likely to be obese if you grow up in a low-income neighborhood</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ FOOTER ════════ -->
+<footer>
+  <div class="logo"><span class="logo-dot"></span>SmartFeed</div>
+  <div>Data: USDA Food Access Research Atlas · Built for public health 🌿</div>
+  <div>© 2025 SmartFeed</div>
+</footer>
+
+<!-- ════════ MODALS ════════ -->
+
+<!-- Login -->
+<div class="modal-bg" id="login-modal">
+  <div class="modal">
+    <h3>Welcome back</h3>
+    <p>Log in to access saved favorites, dietary preferences, and budget settings.</p>
+    <div class="form-group"><label>Email</label><input type="email" placeholder="you@college.edu" /></div>
+    <div class="form-group"><label>Password</label><input type="password" placeholder="••••••••" /></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('login-modal')">Cancel</button>
+      <button class="btn-primary" onclick="toast('Login feature coming soon — backend in progress!'); closeModal('login-modal')">Log In</button>
+    </div>
+    <p style="text-align:center; margin-top:16px; font-size:.82rem; color:#aabab0;">Don't have an account? <a href="#" style="color:var(--green); text-decoration:none;" onclick="closeModal('login-modal'); openModal('signup-modal')">Sign up free</a></p>
+  </div>
+</div>
+
+<!-- Sign up -->
+<div class="modal-bg" id="signup-modal">
+  <div class="modal">
+    <h3>Create your profile</h3>
+    <p>Optional details help us find better options for you.</p>
+    <div class="form-group"><label>Email</label><input type="email" placeholder="you@college.edu" /></div>
+    <div class="form-group"><label>Password</label><input type="password" placeholder="Create a password" /></div>
+    <div class="form-group"><label>Age</label><input type="number" placeholder="e.g. 21" /></div>
+    <div class="form-group">
+      <label>Dietary preference</label>
+      <select>
+        <option>No preference</option>
+        <option>Vegetarian</option>
+        <option>Vegan</option>
+        <option>Gluten-free</option>
+        <option>Low-carb</option>
+        <option>Halal</option>
+        <option>Kosher</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Weekly food budget</label>
+      <select>
+        <option>Under $25</option>
+        <option>$25–$50</option>
+        <option>$50–$100</option>
+        <option>$100+</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('signup-modal')">Cancel</button>
+      <button class="btn-primary" onclick="toast('Account feature coming soon!'); closeModal('signup-modal')">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- Suggest a place -->
+<div class="modal-bg" id="suggest-modal">
+  <div class="modal">
+    <h3>Suggest a healthy spot</h3>
+    <p>Know a place with great, affordable healthy food? Help your community find it.</p>
+    <div class="form-group"><label>Place name</label><input type="text" placeholder="e.g. Maria's Fresh Market" /></div>
+    <div class="form-group"><label>Address</label><input type="text" placeholder="Full address" /></div>
+    <div class="form-group">
+      <label>Type</label>
+      <select>
+        <option>Grocery / Supermarket</option>
+        <option>Farmers Market</option>
+        <option>Healthy Restaurant</option>
+        <option>Community Garden</option>
+        <option>Food Co-op</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Why is it great? (optional)</label><textarea placeholder="Affordable, fresh produce, accepts EBT…"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('suggest-modal')">Cancel</button>
+      <button class="btn-primary" onclick="toast('Thanks! Suggestion submitted for review. 🙌'); closeModal('suggest-modal')">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ── USDA zone classification (mock until API is wired) ── */
+  const ZONES = {
+    desert: {
+      cls: 'desert', emoji: '🏜️',
+      title: 'Food Desert Detected',
+      desc: 'Your area has limited access to supermarkets or large grocery stores. Residents here must travel further than average to reach healthy food sources.',
+      access: { val: 'Low', cls: 'bad' },
+      fastfood: { val: 'High', cls: 'bad' },
+      health: { val: '3/10', cls: 'bad' }
+    },
+    swamp: {
+      cls: 'swamp', emoji: '🐊',
+      title: 'Food Swamp Detected',
+      desc: 'Your area has an over-concentration of fast food, convenience stores, and unhealthy food outlets compared to healthy alternatives.',
+      access: { val: 'Med', cls: 'warn' },
+      fastfood: { val: 'Very High', cls: 'bad' },
+      health: { val: '5/10', cls: 'warn' }
+    },
+    healthy: {
+      cls: 'healthy', emoji: '🌿',
+      title: 'Healthy Food Zone',
+      desc: 'Good news — your area has reasonable access to supermarkets and healthy food options relative to fast food density.',
+      access: { val: 'Good', cls: '' },
+      fastfood: { val: 'Low', cls: '' },
+      health: { val: '8/10', cls: '' }
+    }
+  };
+
+  /* Sample nearby places (will be replaced with live API data) */
+  const SAMPLE_PLACES = [
+    { type:'Grocery Store',      name:'Key Food Supermarket',    dist:'0.3 mi', tags:['EBT Accepted','Fresh Produce','Deli'],     ebt:true  },
+    { type:'Farmers Market',     name:'Local Harvest Market',    dist:'0.6 mi', tags:['Organic','Seasonal','Cash & Card'],        ebt:false },
+    { type:'Healthy Restaurant', name:'Vida Verde Kitchen',      dist:'0.4 mi', tags:['Vegetarian','Under $12','Fast Casual'],    ebt:false },
+    { type:'Food Co-op',         name:'Community Food Co-op',    dist:'0.9 mi', tags:['EBT Accepted','Bulk Foods','Non-profit'],  ebt:true  },
+    { type:'Grocery Store',      name:'Trader Joe\'s',           dist:'1.1 mi', tags:['Affordable','Large Selection'],            ebt:false },
+    { type:'Community Garden',   name:'Bronx Green Collective',  dist:'0.5 mi', tags:['Free Produce','Community','Seasonal'],     ebt:false },
+  ];
+
+  function classifyAddress(addr) {
+    // Heuristic demo — real version hits USDA FARA API
+    const a = addr.toLowerCase();
+    if (a.includes('bronx') || a.includes('compton') || a.includes('detroit')) return 'desert';
+    if (a.includes('brooklyn') || a.includes('chicago') || a.includes('houston')) return 'swamp';
+    return 'healthy';
+  }
+
+  function renderResults(zoneKey) {
+    const zone = ZONES[zoneKey];
+    const rs = document.getElementById('result-section');
+
+    // Banner
+    const banner = document.getElementById('zone-banner');
+    banner.className = `zone-banner ${zone.cls}`;
+    document.getElementById('zone-emoji').textContent = zone.emoji;
+    document.getElementById('zone-title').textContent  = zone.title;
+    document.getElementById('zone-desc').textContent   = zone.desc;
+
+    // Scores
+    const sa = document.getElementById('score-access');
+    const sf = document.getElementById('score-fastfood');
+    const sh = document.getElementById('score-health');
+    sa.textContent = zone.access.val;   sa.className = `num ${zone.access.cls}`;
+    sf.textContent = zone.fastfood.val; sf.className = `num ${zone.fastfood.cls}`;
+    sh.textContent = zone.health.val;   sh.className = `num ${zone.health.cls}`;
+
+    // Places
+    const grid = document.getElementById('places-grid');
+    grid.innerHTML = '';
+    SAMPLE_PLACES.forEach((p, i) => {
+      const tags = p.tags.map(t => `<span class="tag ${p.ebt && t.startsWith('EBT') ? 'ebt' : ''}">${t}</span>`).join('');
+      const card = document.createElement('div');
+      card.className = 'place-card';
+      card.style.animationDelay = `${i * 0.06}s`;
+      card.innerHTML = `
+        <div class="place-type">${p.type}</div>
+        <div class="place-name">${p.name}</div>
+        <div class="place-dist">📍 ${p.dist} away</div>
+        <div class="place-tags">${tags}</div>
+        <button class="btn-directions" onclick="toast('Opening directions to ${p.name}…')">Get Directions →</button>
+      `;
+      grid.appendChild(card);
+    });
+
+    rs.style.display = 'block';
+    rs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function setLoading(on) {
+    document.getElementById('btn-spinner').style.display = on ? 'inline-block' : 'none';
+    document.getElementById('btn-text').textContent = on ? '' : 'Detect';
+    document.getElementById('detect-btn').disabled = on;
+  }
+
+  function detectZone() {
+    const addr = document.getElementById('address-input').value.trim();
+    if (!addr) { toast('Please enter an address first.'); return; }
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      renderResults(classifyAddress(addr));
+    }, 1400);
+  }
+
+  function useGPS() {
+    if (!navigator.geolocation) { toast('Geolocation not supported by your browser.'); return; }
+    toast('Getting your location…');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        document.getElementById('address-input').value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        // In production: reverse geocode → USDA census tract lookup
+        renderResults('swamp'); // demo result
+      },
+      () => toast('Location access denied. Please enter address manually.')
+    );
+  }
+
+  // allow Enter key in address box
+  document.getElementById('address-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') detectZone();
+  });
+
+  /* ── MODAL HELPERS ── */
+  function openModal(id)  { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  document.querySelectorAll('.modal-bg').forEach(bg =>
+    bg.addEventListener('click', e => { if (e.target === bg) bg.classList.remove('open'); })
+  );
+
+  /* ── TOAST ── */
+  function toast(msg, dur = 3000) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), dur);
+  }
+</script>
+</body>
+</html>
