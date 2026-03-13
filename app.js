@@ -110,7 +110,7 @@ async function signUp() {
 async function signIn() {
   const email = val('li-email'), password = val('li-pw');
   const { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) { showErr('li-err', error.message); return; }\
+  if (error) { showErr('li-err', error.message); return; }
   closeModal('modal-login');
   toast('Welcome back! 👋');
 }
@@ -289,15 +289,29 @@ async function _classifyZone(lat, lng) {
 }
 
 function _fetchPlaces(lat, lng, dietaryKeyword) {
+  const HALF_MILE_M = 805;  // half mile in meters
   const baseKw = 'grocery store supermarket farmers market health food';
   const keyword = dietaryKeyword ? `${dietaryKeyword} ${baseKw}` : baseKw;
   return new Promise(resolve => {
     const svc = new google.maps.places.PlacesService(document.createElement('div'));
+    const origin = new google.maps.LatLng(lat, lng);
     svc.nearbySearch({
-      location: new google.maps.LatLng(lat, lng),
-      rankBy: google.maps.places.RankBy.DISTANCE,
+      location: origin,
+      radius: HALF_MILE_M,
       keyword
-    }, (results, status) => resolve(status === 'OK' ? results.slice(0, 12) : []));
+    }, (results, status) => {
+      if (status !== 'OK' || !results) return resolve([]);
+      // Double-check distance and sort closest first
+      const filtered = results
+        .map(p => ({
+          ...p,
+          _distM: google.maps.geometry.spherical.computeDistanceBetween(origin, p.geometry.location)
+        }))
+        .filter(p => p._distM <= HALF_MILE_M)
+        .sort((a, b) => a._distM - b._distM)
+        .slice(0, 12);
+      resolve(filtered);
+    });
   });
 }
 
