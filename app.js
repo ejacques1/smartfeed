@@ -1,26 +1,48 @@
 // ═══════════════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════════════
+// Supabase anon key is designed to be public (RLS protects data)
 const SUPABASE_URL      = 'https://seyildptkabaukqkgahg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNleWlsZHB0a2FiYXVrcWtnYWhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MTUxMTEsImV4cCI6MjA4ODk5MTExMX0.UYZdZo7DS0WSQ_3yVR38lN8RUu8b-HOj6u7_prtlNKc';
-const GOOGLE_MAPS_KEY   = 'AIzaSyBlG0VFRwhaAJBiLF5SRbro3q0bmr-UrhY';
-const USDA_API_KEY      = 'pp4VMdWnsLks1wYCTTBjB0gHh6RwEgiRawmKvfll';
+
+// These are loaded from Vercel env vars via /api/config
+let GOOGLE_MAPS_KEY = '';
+let USDA_API_KEY    = '';
 
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const _gm = document.createElement('script');
-_gm.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=places,geometry&callback=_onMapsReady`;
-_gm.async = true; _gm.defer = true;
-document.head.appendChild(_gm);
-
 let mapsReady = false;
 window._onMapsReady = () => { mapsReady = true; };
+
+// Load config from server, then init Google Maps
+(async function _initConfig() {
+  try {
+    const res = await fetch('/api/config');
+    const cfg = await res.json();
+    GOOGLE_MAPS_KEY = cfg.googleMapsKey || '';
+    USDA_API_KEY    = cfg.usdaApiKey || '';
+  } catch (e) {
+    console.warn('Could not load config, falling back to defaults');
+  }
+  // Load Google Maps after we have the key
+  if (GOOGLE_MAPS_KEY) {
+    const _gm = document.createElement('script');
+    _gm.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=places,geometry&callback=_onMapsReady`;
+    _gm.async = true; _gm.defer = true;
+    document.head.appendChild(_gm);
+  }
+})();
 
 let currentUser   = null;
 let userProfile   = null;
 let userFavorites = [];
 let dailyTargets  = null;
+
+// Filter state
+let lastSearchLat = null;
+let lastSearchLng = null;
+let allPlaces     = [];
 
 // ═══════════════════════════════════════════════════════
 // AUTH STATE
@@ -266,14 +288,16 @@ async function _classifyZone(lat, lng) {
   });
 }
 
-function _fetchPlaces(lat, lng) {
+function _fetchPlaces(lat, lng, dietaryKeyword) {
+  const baseKw = 'grocery store supermarket farmers market health food';
+  const keyword = dietaryKeyword ? `${dietaryKeyword} ${baseKw}` : baseKw;
   return new Promise(resolve => {
     const svc = new google.maps.places.PlacesService(document.createElement('div'));
     svc.nearbySearch({
       location: new google.maps.LatLng(lat, lng),
       rankBy: google.maps.places.RankBy.DISTANCE,
-      keyword: 'grocery store supermarket farmers market health food'
-    }, (results, status) => resolve(status === 'OK' ? results.slice(0, 8) : []));
+      keyword
+    }, (results, status) => resolve(status === 'OK' ? results.slice(0, 12) : []));
   });
 }
 
@@ -290,11 +314,17 @@ function _renderZone(zone, source) {
   sh.textContent = z.health.v; sh.className = 'score-num ' + z.health.c;
 }
 
+function _priceLevelLabel(level) {
+  if (level === undefined || level === null) return '';
+  const symbols = ['Free', '$', '$$', '$$$', '$$$$'];
+  return symbols[level] || '';
+}
+
 function _renderPlaces(places, lat, lng) {
   const grid = el('places-grid');
   grid.innerHTML = '';
   if (!places.length) {
-    grid.innerHTML = '<div class="places-empty">No healthy spots found nearby. Be the first to suggest one! 👇</div>';
+    grid.innerHTML = '<div class="places-empty">No spots match your filters. Try adjusting your dietary or budget preferences. 👆</div>';
     return;
   }
   const uLoc = new google.maps.LatLng(lat, lng);
@@ -306,6 +336,7 @@ function _renderPlaces(places, lat, lng) {
     const name  = p.name.replace(/'/g, "\\'");
     const addr  = (p.vicinity || '').replace(/'/g, "\\'");
     const type  = (p.types?.[0] || 'food spot').replace(/_/g, ' ');
+    const priceLabel = _priceLevelLabel(p.price_level);
     const card  = document.createElement('div');
     card.className = 'place-card';
     card.style.animationDelay = (i * 0.07) + 's';
@@ -316,6 +347,7 @@ function _renderPlaces(places, lat, lng) {
       ${p.rating ? `<div class="place-rating">⭐ ${p.rating} (${p.user_ratings_total || 0})</div>` : ''}
       <div class="place-tags">
         ${p.opening_hours?.open_now ? '<span class="tag open">Open Now</span>' : ''}
+        ${priceLabel ? `<span class="tag price">${priceLabel}</span>` : ''}
         <span class="tag">Healthy Option</span>
       </div>
       <button class="btn-dir" onclick="openDir(${pLat},${pLng})">Get Directions →</button>
@@ -325,13 +357,83 @@ function _renderPlaces(places, lat, lng) {
 }
 
 async function _runSearch(lat, lng, address) {
+  lastSearchLat = lat;
+  lastSearchLng = lng;
+
   const { zone, source } = await _classifyZone(lat, lng);
   _renderZone(zone, source);
-  const places = await _fetchPlaces(lat, lng);
-  _renderPlaces(places, lat, lng);
+
+  // Auto-set filters from user profile
+  _autoSetFilters();
+
+  const dietFilter = el('filter-diet')?.value || '';
+  const places = await _fetchPlaces(lat, lng, dietFilter);
+  allPlaces = places;
+
+  _applyBudgetFilter();
+
   await sb.from('searches').insert({ address, lat, lng, zone_result: zone, user_id: currentUser?.id || null });
   el('result-section').style.display = 'block';
   el('result-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════════════════
+// DIETARY & BUDGET FILTERS
+// ═══════════════════════════════════════════════════════
+function _autoSetFilters() {
+  if (!userProfile) return;
+  const dietEl = el('filter-diet');
+  const budgetEl = el('filter-budget');
+
+  // Map profile dietary preference to filter value
+  if (dietEl && userProfile.dietary_preference && userProfile.dietary_preference !== 'No preference') {
+    const pref = userProfile.dietary_preference.toLowerCase();
+    for (const opt of dietEl.options) {
+      if (opt.value === pref) { dietEl.value = pref; break; }
+    }
+  }
+
+  // Map weekly budget to max price_level
+  if (budgetEl && userProfile.weekly_budget) {
+    const budgetMap = { 'Under $25': '1', '$25–$50': '2', '$50–$100': '3', '$100+': '0' };
+    const mapped = budgetMap[userProfile.weekly_budget];
+    if (mapped) budgetEl.value = mapped;
+  }
+}
+
+function _applyBudgetFilter() {
+  const maxPrice = parseInt(el('filter-budget')?.value) || 0;
+  let filtered = allPlaces;
+
+  if (maxPrice > 0) {
+    filtered = allPlaces.filter(p =>
+      p.price_level === undefined || p.price_level === null || p.price_level <= maxPrice
+    );
+  }
+
+  _renderPlaces(filtered, lastSearchLat, lastSearchLng);
+}
+
+async function applyFilters() {
+  if (!lastSearchLat || !lastSearchLng) return;
+
+  const dietFilter = el('filter-diet')?.value || '';
+
+  // Dietary filter: re-fetch with new keyword to get relevant results
+  const grid = el('places-grid');
+  grid.innerHTML = '<div class="places-empty">Updating results…</div>';
+
+  const places = await _fetchPlaces(lastSearchLat, lastSearchLng, dietFilter);
+  allPlaces = places;
+
+  // Budget filter: client-side filter by price_level
+  _applyBudgetFilter();
+}
+
+function resetFilters() {
+  el('filter-diet').value = '';
+  el('filter-budget').value = '0';
+  applyFilters();
 }
 
 async function detectZone() {
@@ -396,20 +498,10 @@ async function handleLabelUpload(event) {
   });
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('/api/scan-label', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 500,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image', source: { type: 'base64', media_type: file.type, data: base64 } },
-            { type: 'text', text: 'Read this nutrition facts label. Return ONLY valid JSON, no markdown, no explanation: {"product":"name if visible else Unknown","calories":number,"protein_g":number,"carbs_g":number,"fat_g":number,"serving_size":"text"}. Use 0 for any value not visible.' }
-          ]
-        }]
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ base64, mediaType: file.type })
     });
     const data = await response.json();
     const text = data.content?.[0]?.text || '{}';
