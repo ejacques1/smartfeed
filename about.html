@@ -4,53 +4,75 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SmartFeed — About Us</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0e1117;
-    --surface: #161b22;
-    --surface-raised: #1c2129;
-    --border: #30363d;
-    --text: #e6edf3;
-    --text-muted: #8b949e;
-    --accent-green: #3fb950;
-    --accent-green-dim: rgba(63,185,80,0.15);
-    --accent-blue: #58a6ff;
-    --accent-blue-dim: rgba(88,166,255,0.1);
-    --accent-amber: #d29922;
-    --accent-amber-dim: rgba(210,153,34,0.12);
-    --accent-purple: #bc8cff;
-    --accent-purple-dim: rgba(188,140,255,0.1);
-    --mono: 'JetBrains Mono', monospace;
-    --sans: 'DM Sans', sans-serif;
-    --radius: 10px;
+    --g: #1a7a4a;
+    --gl: #24a866;
+    --gxl: #d4f5e4;
+    --a: #e6900a;
+    --al: #fff3d6;
+    --ink: #0f1f14;
+    --mist: #f2f7f4;
+    --w: #fff;
+    --border: #d5e8dc;
+    --text-muted: #5a6e60;
+    --radius: 16px;
+    --sh: 0 4px 24px rgba(15,31,20,0.08);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
+    font-family: 'DM Sans', sans-serif;
+    background: var(--mist);
+    color: var(--ink);
     line-height: 1.65;
-    padding: 0 20px;
   }
+  /* ── Nav bar (matches main app) ── */
+  .about-nav {
+    background: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+  }
+  .about-nav .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .about-nav .ldot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--gl);
+    display: inline-block;
+  }
+  .about-nav .navlinks {
+    display: flex;
+    gap: 28px;
+  }
+  .about-nav .navlinks a {
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .about-nav .navlinks a:hover,
+  .about-nav .navlinks a.active {
+    color: #fff;
+  }
+  /* ── Container ── */
   .container {
     max-width: 860px;
     margin: 0 auto;
-    padding: 60px 0 100px;
+    padding: 60px 24px 100px;
   }
-  /* ── Back link ── */
-  .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--accent-green);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 40px;
-    transition: opacity 0.2s;
-  }
-  .back-link:hover { opacity: 0.8; text-decoration: underline; }
   /* ── Header ── */
   .header {
     text-align: center;
@@ -58,22 +80,23 @@
   }
   .header-badge {
     display: inline-block;
-    background: var(--accent-green-dim);
-    color: var(--accent-green);
-    font-family: var(--mono);
+    background: var(--gxl);
+    color: var(--g);
     font-size: 12px;
-    font-weight: 600;
-    padding: 4px 14px;
+    font-weight: 700;
+    padding: 5px 16px;
     border-radius: 20px;
     letter-spacing: 0.5px;
     margin-bottom: 20px;
     text-transform: uppercase;
   }
   .header h1 {
+    font-family: 'Syne', sans-serif;
     font-size: 2.4rem;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: -0.5px;
     margin-bottom: 12px;
+    color: var(--ink);
   }
   .header p {
     color: var(--text-muted);
@@ -83,18 +106,19 @@
   }
   /* ── Section styles ── */
   .section-label {
-    font-family: var(--mono);
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: var(--accent-blue);
-    margin-bottom: 12px;
+    color: var(--gl);
+    margin-bottom: 10px;
   }
   .section-title {
+    font-family: 'Syne', sans-serif;
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 800;
     margin-bottom: 8px;
+    color: var(--ink);
   }
   .section-desc {
     color: var(--text-muted);
@@ -103,22 +127,24 @@
     max-width: 600px;
     line-height: 1.75;
   }
-  section { margin-bottom: 72px; }
-  /* ── Mission box ── */
-  .mission-box {
-    background: var(--surface);
+  section { margin-bottom: 64px; }
+  /* ── Info boxes ── */
+  .initiative-box, .mission-box {
+    background: var(--w);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 32px;
-    border-left: 3px solid var(--accent-green);
+    box-shadow: var(--sh);
   }
-  .mission-box p {
+  .initiative-box { border-left: 4px solid var(--gl); }
+  .mission-box { border-left: 4px solid var(--g); }
+  .initiative-box p, .mission-box p {
     font-size: 15px;
     line-height: 1.8;
     color: var(--text-muted);
   }
-  .mission-box p strong {
-    color: var(--text);
+  .initiative-box p strong, .mission-box p strong {
+    color: var(--ink);
   }
   /* ── Team grid ── */
   .team-grid {
@@ -127,99 +153,115 @@
     gap: 24px;
   }
   .team-card {
-    background: var(--surface);
+    background: var(--w);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 28px;
     text-align: center;
-    transition: border-color 0.2s, transform 0.2s;
+    box-shadow: var(--sh);
+    transition: transform 0.2s, box-shadow 0.2s;
   }
   .team-card:hover {
-    border-color: var(--accent-green);
     transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(15,31,20,0.12);
   }
   .team-photo {
     width: 120px;
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid var(--border);
+    border: 3px solid var(--gxl);
     margin-bottom: 16px;
-    background: var(--surface-raised);
+    background: var(--mist);
   }
   .team-name {
+    font-family: 'Syne', sans-serif;
     font-size: 1.1rem;
-    font-weight: 700;
+    font-weight: 800;
     margin-bottom: 4px;
+    color: var(--ink);
   }
   .team-role {
-    font-family: var(--mono);
     font-size: 12px;
-    color: var(--accent-green);
+    color: var(--gl);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-weight: 700;
     margin-bottom: 12px;
   }
   .team-bio {
     font-size: 14px;
     color: var(--text-muted);
-    line-height: 1.6;
+    line-height: 1.65;
   }
   /* ── Advisors grid ── */
   .advisors-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 16px;
   }
   .advisor-card {
-    background: var(--surface);
+    background: var(--w);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 20px 24px;
     text-align: center;
+    box-shadow: var(--sh);
   }
   .advisor-name {
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 800;
     margin-bottom: 4px;
+    color: var(--ink);
   }
   .advisor-role {
-    font-family: var(--mono);
     font-size: 11px;
-    color: var(--accent-amber);
+    color: var(--a);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-weight: 700;
   }
-  /* ── Initiative box ── */
-  .initiative-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 32px;
-    border-left: 3px solid var(--accent-blue);
-  }
-  .initiative-box p {
-    font-size: 15px;
-    line-height: 1.8;
+  /* ── Footer ── */
+  .about-footer {
+    text-align: center;
+    padding: 32px 24px;
     color: var(--text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
   }
-  .initiative-box p strong {
-    color: var(--text);
+  .about-footer a {
+    color: var(--gl);
+    text-decoration: none;
+    font-weight: 600;
   }
+  .about-footer a:hover { text-decoration: underline; }
   /* ── Responsive ── */
   @media (max-width: 640px) {
+    .about-nav { padding: 16px 20px; }
+    .about-nav .navlinks { gap: 16px; }
+    .about-nav .navlinks a { font-size: 0.82rem; }
     .header h1 { font-size: 1.8rem; }
     .team-grid { grid-template-columns: 1fr; }
     .advisors-grid { grid-template-columns: 1fr 1fr; }
-    .mission-box { padding: 20px; }
-    .initiative-box { padding: 20px; }
+    .initiative-box, .mission-box { padding: 20px; }
   }
 </style>
 </head>
 <body>
-<div class="container">
-  <a href="/" class="back-link">&larr; Back to SmartFeed</a>
 
+<!-- ══════ NAV BAR ══════ -->
+<nav class="about-nav">
+  <a href="/" class="logo"><span class="ldot"></span>SmartFeed</a>
+  <div class="navlinks">
+    <a href="/">Home</a>
+    <a href="/#how">How it works</a>
+    <a href="/#why">Why it matters</a>
+    <a href="/about" class="active">About us</a>
+  </div>
+</nav>
+
+<div class="container">
   <!-- ══════ HEADER ══════ -->
   <div class="header">
     <div class="header-badge">About Us</div>
@@ -256,7 +298,7 @@
       <div class="team-card">
         <img src="/images/team-nischal.jpeg" alt="Nischal Sharma" class="team-photo">
         <div class="team-name">Nischal Sharma</div>
-        <div class="team-role">Feature Dev & Bug Fixes</div>
+        <div class="team-role">Feature Dev &amp; Bug Fixes</div>
         <div class="team-bio">Public Health student focused on nutrition and community wellness. Her own struggle with unhealthy eating during a packed class schedule inspired SmartFeed. She manages features, updates, and bug fixes to keep the app running smoothly.</div>
       </div>
 
@@ -264,7 +306,7 @@
       <div class="team-card">
         <img src="/images/team-jeanique.jpeg" alt="Jeanique Gordon" class="team-photo">
         <div class="team-name">Jeanique Gordon</div>
-        <div class="team-role">Wellness & Community</div>
+        <div class="team-role">Wellness &amp; Community</div>
         <div class="team-bio">Fourth-year Public Health and Nutrition student in York College's 4+1 accelerated program. Her passion for healthy cooking and active living &mdash; and seeing that not everyone has equal access &mdash; is what brought SmartFeed to life.</div>
       </div>
 
@@ -272,7 +314,7 @@
       <div class="team-card">
         <img src="/images/team-guadalupe.jpg" alt="Guadalupe Luna" class="team-photo">
         <div class="team-name">Guadalupe Luna</div>
-        <div class="team-role">Research & Content</div>
+        <div class="team-role">Research &amp; Content</div>
         <div class="team-bio">Public Health major whose interest in the field grew during the COVID-19 pandemic after experiencing its impact firsthand. Inspired by her son's nutrition and mental health challenges, she focuses on making healthy eating easier and more accessible for busy students.</div>
       </div>
 
@@ -312,5 +354,10 @@
     </div>
   </section>
 </div>
+
+<footer class="about-footer">
+  <p>NYC SmartFeed &mdash; A student initiative from <a href="https://www.york.cuny.edu" target="_blank">York College, CUNY</a></p>
+</footer>
+
 </body>
 </html>
