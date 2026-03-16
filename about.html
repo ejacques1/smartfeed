@@ -165,25 +165,54 @@
     color: var(--text-muted);
     line-height: 1.6;
   }
-  /* ── Placeholder avatar ── */
-  .avatar-placeholder {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 3px solid var(--border);
-    margin: 0 auto 16px;
-    background: var(--surface-raised);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
+  /* ── Advisors grid ── */
+  .advisors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .advisor-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    text-align: center;
+  }
+  .advisor-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .advisor-role {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-amber);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  /* ── Initiative box ── */
+  .initiative-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    border-left: 3px solid var(--accent-blue);
+  }
+  .initiative-box p {
+    font-size: 15px;
+    line-height: 1.8;
     color: var(--text-muted);
+  }
+  .initiative-box p strong {
+    color: var(--text);
   }
   /* ── Responsive ── */
   @media (max-width: 640px) {
     .header h1 { font-size: 1.8rem; }
     .team-grid { grid-template-columns: 1fr; }
+    .advisors-grid { grid-template-columns: 1fr 1fr; }
     .mission-box { padding: 20px; }
+    .initiative-box { padding: 20px; }
   }
 </style>
 </head>
@@ -198,52 +227,98 @@
     <p>The people behind SmartFeed — working to improve food access through technology and data.</p>
   </div>
 
+  <!-- ══════ ABOUT ══════ -->
+  <section>
+    <div class="section-label">The Initiative</div>
+    <div class="section-title">An Independent Student Project</div>
+    <div class="initiative-box">
+      <p><strong>NYC SmartFeed</strong> is an independent project created by Public Health students at <strong>York College, CUNY</strong>. Born out of firsthand experience with food access challenges on and around campus, the team set out to build a tool that helps college students find affordable, healthy food options in their neighborhoods &mdash; powered by real USDA data and AI. The project's AI development was spearheaded by <strong>Dr. Erin Jacques</strong>, and the public health content and marketing were reviewed by faculty advisors within the Public Health program.</p>
+    </div>
+  </section>
+
   <!-- ══════ MISSION ══════ -->
   <section>
     <div class="section-label">Our Mission</div>
     <div class="section-title">Why We Built SmartFeed</div>
     <div class="mission-box">
-      <p><strong>SmartFeed</strong> was created to make food access data actionable. Millions of Americans live in neighborhoods classified by the USDA as low-income and low-access areas — places where supermarkets and fresh food are hard to reach. We built SmartFeed to help people understand their food environment, find healthier options nearby, and make informed nutritional choices — all powered by real government data and AI.</p>
+      <p>Millions of Americans live in neighborhoods classified by the USDA as low-income and low-access areas &mdash; places where supermarkets and fresh food are hard to reach. Many college students face these barriers daily: tight budgets, packed schedules, and food environments dominated by fast food. <strong>SmartFeed</strong> was built to help students understand their food environment, find healthier options nearby, and make informed nutritional choices &mdash; because eating well shouldn't depend on your zip code.</p>
     </div>
   </section>
 
-  <!-- ══════ TEAM ══════ -->
+  <!-- ══════ STUDENT TEAM ══════ -->
   <section>
-    <div class="section-label">The Team</div>
-    <div class="section-title">Who We Are</div>
-    <div class="section-desc">Our team brings together expertise in public health, technology, and community advocacy.</div>
+    <div class="section-label">Student Team</div>
+    <div class="section-title">The People Behind SmartFeed</div>
+    <div class="section-desc">Public Health students at York College, CUNY who designed, built, and launched this project.</div>
 
     <div class="team-grid">
-      <!-- TEAM MEMBER 1 (placeholder) -->
+      <!-- Nischal Sharma -->
       <div class="team-card">
-        <div class="avatar-placeholder">1</div>
-        <div class="team-name">Team Member 1</div>
-        <div class="team-role">Role</div>
-        <div class="team-bio">Short bio or description goes here.</div>
+        <img src="/images/team-nischal.jpeg" alt="Nischal Sharma" class="team-photo">
+        <div class="team-name">Nischal Sharma</div>
+        <div class="team-role">Feature Dev & Bug Fixes</div>
+        <div class="team-bio">Public Health student focused on nutrition and community wellness. Her own struggle with unhealthy eating during a packed class schedule inspired SmartFeed. She manages features, updates, and bug fixes to keep the app running smoothly.</div>
       </div>
 
-      <!-- TEAM MEMBER 2 (placeholder) -->
+      <!-- Jeanique Gordon -->
       <div class="team-card">
-        <div class="avatar-placeholder">2</div>
-        <div class="team-name">Team Member 2</div>
-        <div class="team-role">Role</div>
-        <div class="team-bio">Short bio or description goes here.</div>
+        <img src="/images/team-jeanique.jpeg" alt="Jeanique Gordon" class="team-photo">
+        <div class="team-name">Jeanique Gordon</div>
+        <div class="team-role">Wellness & Community</div>
+        <div class="team-bio">Fourth-year Public Health and Nutrition student in York College's 4+1 accelerated program. Her passion for healthy cooking and active living &mdash; and seeing that not everyone has equal access &mdash; is what brought SmartFeed to life.</div>
       </div>
 
-      <!-- TEAM MEMBER 3 (placeholder) -->
+      <!-- Guadalupe Luna -->
       <div class="team-card">
-        <div class="avatar-placeholder">3</div>
-        <div class="team-name">Team Member 3</div>
-        <div class="team-role">Role</div>
-        <div class="team-bio">Short bio or description goes here.</div>
+        <img src="/images/team-guadalupe.jpg" alt="Guadalupe Luna" class="team-photo">
+        <div class="team-name">Guadalupe Luna</div>
+        <div class="team-role">Research & Content</div>
+        <div class="team-bio">Public Health major whose interest in the field grew during the COVID-19 pandemic after experiencing its impact firsthand. Inspired by her son's nutrition and mental health challenges, she focuses on making healthy eating easier and more accessible for busy students.</div>
       </div>
 
-      <!-- TEAM MEMBER 4 (placeholder) -->
+      <!-- Abiba Fofana -->
       <div class="team-card">
-        <div class="avatar-placeholder">4</div>
-        <div class="team-name">Team Member 4</div>
-        <div class="team-role">Role</div>
-        <div class="team-bio">Short bio or description goes here.</div>
+        <img src="/images/team-abiba.jpg" alt="Abiba Fofana" class="team-photo">
+        <div class="team-name">Abiba Fofana</div>
+        <div class="team-role">Feature Management</div>
+        <div class="team-bio">Public Health major and advocate for health education, disease prevention, and community empowerment. She manages features, updates, and purchasing decisions for the app, bringing her skills in research and public health communication to the team.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ AI DEVELOPMENT ══════ -->
+  <section>
+    <div class="section-label">AI Development</div>
+    <div class="section-title">Technical Leadership</div>
+
+    <div class="team-grid">
+      <div class="team-card">
+        <img src="/images/team-erin.jpg" alt="Dr. Erin Jacques" class="team-photo">
+        <div class="team-name">Dr. Erin Jacques</div>
+        <div class="team-role">AI Development Lead</div>
+        <div class="team-bio">Spearheaded the AI and technical development of SmartFeed, including the USDA data integration, zone classification system, nutrition label scanner powered by Claude AI, and full-stack deployment.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ ADVISORS ══════ -->
+  <section>
+    <div class="section-label">Faculty Advisors</div>
+    <div class="section-title">Advisory Group</div>
+    <div class="section-desc">Public Health faculty at York College, CUNY who reviewed the project's public health content and marketing materials.</div>
+
+    <div class="advisors-grid">
+      <div class="advisor-card">
+        <div class="advisor-name">Dr. Claudia Calhoon</div>
+        <div class="advisor-role">Public Health Faculty</div>
+      </div>
+      <div class="advisor-card">
+        <div class="advisor-name">Dr. Emma Vignola</div>
+        <div class="advisor-role">Public Health Faculty</div>
+      </div>
+      <div class="advisor-card">
+        <div class="advisor-name">Dr. Nicholas Groskopf</div>
+        <div class="advisor-role">Public Health Faculty</div>
       </div>
     </div>
   </section>
