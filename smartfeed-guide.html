@@ -427,7 +427,7 @@
         </div>
         <p>Every visual style for the entire app. Colors, fonts, spacing, animations, and mobile responsiveness. Zero logic — just how things look.</p>
         <div class="contains">
-          <strong>What's inside:</strong> Color variables (green = healthy, amber = swamp, red = desert) · Hero background gradient · Zone banner colors · Score card grid · Nutrition progress bars · Places card layout · Modal styling · Mobile breakpoint at 768px
+          <strong>What's inside:</strong> Color variables (green = healthy, amber = limited access, red = low-access (LILA)) · Hero background gradient · Zone banner colors · Score card grid · Nutrition progress bars · Places card layout · Modal styling · Mobile breakpoint at 768px
         </div>
       </div>
       <div class="file-card" data-color="blue">
@@ -437,7 +437,7 @@
         </div>
         <p>All the JavaScript logic. Every button click, API call, calculation, and screen change runs through here. This is where everything actually happens.</p>
         <div class="contains">
-          <strong>What's inside:</strong> Supabase &amp; Google Maps setup · Login / signup / logout · Food desert detection using USDA + Census data · Zone classification (desert, swamp, or healthy) · Nearby places search with dietary &amp; budget filters · Nutrition label scanner (photo upload + product search) · Calorie calculator using Mifflin-St Jeor equation · Favorites &amp; community suggestions
+          <strong>What's inside:</strong> Supabase &amp; Google Maps setup · Login / signup / logout · Food access detection using USDA + Census data · Zone classification (LILA, limited access, or healthy) · Nearby places search with dietary &amp; budget filters · Nutrition label scanner (photo upload + product search) · Calorie calculator using Mifflin-St Jeor equation · Favorites &amp; community suggestions
         </div>
       </div>
       <div class="file-card" data-color="purple">
@@ -508,7 +508,7 @@
         <span class="task-file blue">app.js</span>
       </div>
       <div class="task-row">
-        <span class="task-label">Change how food deserts are classified</span>
+        <span class="task-label">Change how food access zones are classified</span>
         <span class="task-file blue">app.js</span>
       </div>
       <div class="task-row">
@@ -554,11 +554,11 @@
       </div>
       <div class="flow-step">
         <div class="flow-num">3</div>
-        <div class="flow-text">Census tract is checked against the <strong>USDA Food Access Research Atlas</strong> for official food desert data</div>
+        <div class="flow-text">Census tract is checked against the <strong>USDA Food Access Research Atlas</strong> for official food access data</div>
       </div>
       <div class="flow-step">
         <div class="flow-num">4</div>
-        <div class="flow-text">Zone banner turns <strong style="color:var(--accent-red)">red</strong> (desert), <strong style="color:var(--accent-amber)">amber</strong> (swamp), or <strong style="color:var(--accent-green)">green</strong> (healthy)</div>
+        <div class="flow-text">Zone banner turns <strong style="color:var(--accent-red)">red</strong> (LILA), <strong style="color:var(--accent-amber)">amber</strong> (limited access), or <strong style="color:var(--accent-green)">green</strong> (healthy)</div>
       </div>
       <div class="flow-step">
         <div class="flow-num">5</div>
@@ -609,7 +609,7 @@
       </div>
       <div class="service-row">
         <span class="service-name">USDA Atlas</span>
-        <span class="service-desc">Official government food desert and food access data</span>
+        <span class="service-desc">Official government low-income and low-access area data</span>
       </div>
       <div class="service-row">
         <span class="service-name">Census Bureau</span>

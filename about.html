@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartFeed — About Us</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e1117;
+    --surface: #161b22;
+    --surface-raised: #1c2129;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent-green: #3fb950;
+    --accent-green-dim: rgba(63,185,80,0.15);
+    --accent-blue: #58a6ff;
+    --accent-blue-dim: rgba(88,166,255,0.1);
+    --accent-amber: #d29922;
+    --accent-amber-dim: rgba(210,153,34,0.12);
+    --accent-purple: #bc8cff;
+    --accent-purple-dim: rgba(188,140,255,0.1);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --radius: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.65;
+    padding: 0 20px;
+  }
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 0 100px;
+  }
+  /* ── Back link ── */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--accent-green);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 40px;
+    transition: opacity 0.2s;
+  }
+  .back-link:hover { opacity: 0.8; text-decoration: underline; }
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+  .header-badge {
+    display: inline-block;
+    background: var(--accent-green-dim);
+    color: var(--accent-green);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  .header h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+  }
+  .header p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  /* ── Section styles ── */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent-blue);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .section-desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+    max-width: 600px;
+    line-height: 1.75;
+  }
+  section { margin-bottom: 72px; }
+  /* ── Mission box ── */
+  .mission-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    border-left: 3px solid var(--accent-green);
+  }
+  .mission-box p {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-muted);
+  }
+  .mission-box p strong {
+    color: var(--text);
+  }
+  /* ── Team grid ── */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+  }
+  .team-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .team-card:hover {
+    border-color: var(--accent-green);
+    transform: translateY(-3px);
+  }
+  .team-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--border);
+    margin-bottom: 16px;
+    background: var(--surface-raised);
+  }
+  .team-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .team-role {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent-green);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+  .team-bio {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  /* ── Placeholder avatar ── */
+  .avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid var(--border);
+    margin: 0 auto 16px;
+    background: var(--surface-raised);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: var(--text-muted);
+  }
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .header h1 { font-size: 1.8rem; }
+    .team-grid { grid-template-columns: 1fr; }
+    .mission-box { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="/" class="back-link">&larr; Back to SmartFeed</a>
+
+  <!-- ══════ HEADER ══════ -->
+  <div class="header">
+    <div class="header-badge">About Us</div>
+    <h1>Meet the Team</h1>
+    <p>The people behind SmartFeed — working to improve food access through technology and data.</p>
+  </div>
+
+  <!-- ══════ MISSION ══════ -->
+  <section>
+    <div class="section-label">Our Mission</div>
+    <div class="section-title">Why We Built SmartFeed</div>
+    <div class="mission-box">
+      <p><strong>SmartFeed</strong> was created to make food access data actionable. Millions of Americans live in neighborhoods classified by the USDA as low-income and low-access areas — places where supermarkets and fresh food are hard to reach. We built SmartFeed to help people understand their food environment, find healthier options nearby, and make informed nutritional choices — all powered by real government data and AI.</p>
+    </div>
+  </section>
+
+  <!-- ══════ TEAM ══════ -->
+  <section>
+    <div class="section-label">The Team</div>
+    <div class="section-title">Who We Are</div>
+    <div class="section-desc">Our team brings together expertise in public health, technology, and community advocacy.</div>
+
+    <div class="team-grid">
+      <!-- TEAM MEMBER 1 (placeholder) -->
+      <div class="team-card">
+        <div class="avatar-placeholder">1</div>
+        <div class="team-name">Team Member 1</div>
+        <div class="team-role">Role</div>
+        <div class="team-bio">Short bio or description goes here.</div>
+      </div>
+
+      <!-- TEAM MEMBER 2 (placeholder) -->
+      <div class="team-card">
+        <div class="avatar-placeholder">2</div>
+        <div class="team-name">Team Member 2</div>
+        <div class="team-role">Role</div>
+        <div class="team-bio">Short bio or description goes here.</div>
+      </div>
+
+      <!-- TEAM MEMBER 3 (placeholder) -->
+      <div class="team-card">
+        <div class="avatar-placeholder">3</div>
+        <div class="team-name">Team Member 3</div>
+        <div class="team-role">Role</div>
+        <div class="team-bio">Short bio or description goes here.</div>
+      </div>
+
+      <!-- TEAM MEMBER 4 (placeholder) -->
+      <div class="team-card">
+        <div class="avatar-placeholder">4</div>
+        <div class="team-name">Team Member 4</div>
+        <div class="team-role">Role</div>
+        <div class="team-bio">Short bio or description goes here.</div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

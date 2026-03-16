@@ -240,9 +240,9 @@ async function _getUSDA(lat, lng) {
     const d = uData?.data?.[0];
     if (!d) return null;
 
-    const isDesert = d.LILATracts_1And10 === 1 || d.LILATracts_halfAnd10 === 1;
-    const isSwamp  = !isDesert && (d.lapophalfshare > 0.33);
-    return { isDesert, isSwamp, verified: true, raw: d };
+    const isLILA    = d.LILATracts_1And10 === 1 || d.LILATracts_halfAnd10 === 1;
+    const isLimited = !isLILA && (d.lapophalfshare > 0.33);
+    return { isLILA, isLimited, verified: true, raw: d };
   } catch (e) {
     console.warn('USDA unavailable, falling back to Places ratio:', e);
     return null;
@@ -253,13 +253,13 @@ async function _getUSDA(lat, lng) {
 // ZONE CLASSIFICATION
 // ═══════════════════════════════════════════════════════
 const ZONE_DATA = {
-  desert:  { cls:'desert',  emoji:'🏜️', title:'Food Desert Detected',
-    desc:'Your census tract is officially classified as a food desert by the USDA. Residents here have limited access to supermarkets and affordable healthy food.',
+  lila:    { cls:'lila',    emoji:'⚠️', title:'Low-Income & Low-Access Area',
+    desc:'Your census tract is classified as a USDA Low-Income and Low-Access (LILA) area. Residents here have limited access to supermarkets and affordable healthy food.',
     access:{v:'Low',c:'bad'}, ff:{v:'High',c:'bad'}, health:{v:'3/10',c:'bad'} },
-  swamp:   { cls:'swamp',   emoji:'🐊', title:'Food Swamp Detected',
-    desc:'Your area is over-saturated with fast food and convenience stores relative to healthy alternatives, making nutritious choices harder.',
+  limited: { cls:'limited', emoji:'🟡', title:'Limited Food Access Area',
+    desc:'Your area has a high share of residents who live far from supermarkets and healthy food sources, making nutritious choices harder.',
     access:{v:'Med',c:'warn'}, ff:{v:'Very High',c:'bad'}, health:{v:'5/10',c:'warn'} },
-  healthy: { cls:'healthy', emoji:'🌿', title:'Healthy Food Zone',
+  healthy: { cls:'healthy', emoji:'🌿', title:'Adequate Food Access',
     desc:'Your area has reasonable access to grocery stores and healthy food options relative to fast food density. Nice!',
     access:{v:'Good',c:''}, ff:{v:'Low',c:''}, health:{v:'8/10',c:''} }
 };
@@ -267,7 +267,7 @@ const ZONE_DATA = {
 async function _classifyZone(lat, lng) {
   const usda = await _getUSDA(lat, lng);
   if (usda?.verified) {
-    const zone = usda.isDesert ? 'desert' : usda.isSwamp ? 'swamp' : 'healthy';
+    const zone = usda.isLILA ? 'lila' : usda.isLimited ? 'limited' : 'healthy';
     return { zone, source: 'usda' };
   }
   return new Promise(resolve => {
@@ -277,8 +277,8 @@ async function _classifyZone(lat, lng) {
     const finish = () => {
       if (--done > 0) return;
       let zone = 'healthy';
-      if (grocery === 0) zone = 'desert';
-      else if ((fastfood / Math.max(grocery, 1)) >= 3) zone = 'swamp';
+      if (grocery === 0) zone = 'lila';
+      else if ((fastfood / Math.max(grocery, 1)) >= 3) zone = 'limited';
       resolve({ zone, source: 'google' });
     };
     svc.nearbySearch({ location: loc, radius: 1600, type: 'grocery_or_supermarket' },

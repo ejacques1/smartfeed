@@ -44,8 +44,8 @@ h1 span{color:var(--gl)}
 .spinner.dark{border-color:rgba(0,0,0,.12);border-top-color:var(--g)}
 #result-section{display:none;padding:60px 24px;max-width:960px;margin:0 auto}
 .zone-banner{border-radius:var(--rad);padding:28px 32px;margin-bottom:32px;display:flex;align-items:center;gap:20px;animation:fadeUp .5s ease both}
-.zone-banner.desert{background:var(--rl);border:1.5px solid #f5c0bb}
-.zone-banner.swamp{background:var(--al);border:1.5px solid #f5d88a}
+.zone-banner.lila{background:var(--rl);border:1.5px solid #f5c0bb}
+.zone-banner.limited{background:var(--al);border:1.5px solid #f5d88a}
 .zone-banner.healthy{background:var(--gxl);border:1.5px solid #a8e6c5}
 .zone-emoji{font-size:3rem;flex-shrink:0}
 .zone-text h3{font-family:"Syne",sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:6px}
