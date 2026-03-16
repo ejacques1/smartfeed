@@ -236,11 +236,42 @@
     font-weight: 600;
   }
   .about-footer a:hover { text-decoration: underline; }
+  /* ── Hamburger ── */
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 100;
+  }
+  .hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
   /* ── Responsive ── */
   @media (max-width: 640px) {
-    .about-nav { padding: 16px 20px; }
-    .about-nav .navlinks { gap: 16px; }
-    .about-nav .navlinks a { font-size: 0.82rem; }
+    .about-nav { padding: 16px 20px; flex-wrap: wrap; }
+    .hamburger { display: flex; }
+    .about-nav .navlinks {
+      display: none;
+      width: 100%;
+      order: 10;
+      flex-direction: column;
+      gap: 16px;
+      padding: 16px 0 8px;
+    }
+    .about-nav .navlinks.open { display: flex; }
+    .about-nav .navlinks a { font-size: 0.95rem; }
     .header h1 { font-size: 1.8rem; }
     .team-grid { grid-template-columns: 1fr; }
     .advisors-grid { grid-template-columns: 1fr 1fr; }
@@ -253,6 +284,9 @@
 <!-- ══════ NAV BAR ══════ -->
 <nav class="about-nav">
   <a href="/" class="logo"><span class="ldot"></span>SmartFeed</a>
+  <button class="hamburger" onclick="this.classList.toggle('open');this.parentElement.querySelector('.navlinks').classList.toggle('open')" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
   <div class="navlinks">
     <a href="/">Home</a>
     <a href="/#how">How it works</a>

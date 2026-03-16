@@ -15,6 +15,9 @@
   <div class="hcircle"></div>
   <nav>
     <div class="logo" onclick="showHome()"><span class="ldot"></span>SmartFeed</div>
+    <button class="hamburger" onclick="this.classList.toggle('open');document.querySelector('.navlinks').classList.toggle('open')" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
     <div class="navlinks">
       <a href="#how">How it works</a>
       <a href="#why">Why it matters</a>
