@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/guide", "destination": "/smartfeed-guide.html" },
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ],
   "headers": [

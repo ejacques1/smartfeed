@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartFeed — Developer Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e1117;
+    --surface: #161b22;
+    --surface-raised: #1c2129;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent-green: #3fb950;
+    --accent-green-dim: rgba(63,185,80,0.15);
+    --accent-blue: #58a6ff;
+    --accent-blue-dim: rgba(88,166,255,0.1);
+    --accent-amber: #d29922;
+    --accent-amber-dim: rgba(210,153,34,0.12);
+    --accent-red: #f85149;
+    --accent-red-dim: rgba(248,81,73,0.12);
+    --accent-purple: #bc8cff;
+    --accent-purple-dim: rgba(188,140,255,0.1);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --radius: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.65;
+    padding: 0 20px;
+  }
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 0 100px;
+  }
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+  .header-badge {
+    display: inline-block;
+    background: var(--accent-green-dim);
+    color: var(--accent-green);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  .header h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+  }
+  .header p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  /* ── Section styles ── */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent-blue);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .section-desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+    max-width: 600px;
+  }
+  section { margin-bottom: 72px; }
+  /* ── Repo tree ── */
+  .repo-tree {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .repo-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-raised);
+  }
+  .repo-header svg {
+    width: 20px; height: 20px;
+    fill: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .repo-header .repo-name {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .repo-header .branch {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--accent-blue-dim);
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-left: auto;
+  }
+  .file-row {
+    display: grid;
+    grid-template-columns: 24px 1fr 1fr;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .file-row:last-child { border-bottom: none; }
+  .file-row.indent { padding-left: 52px; }
+  .file-row svg {
+    width: 16px; height: 16px;
+    flex-shrink: 0;
+  }
+  .file-row svg.folder-icon { fill: var(--accent-blue); }
+  .file-row svg.file-icon { fill: var(--text-muted); }
+  .file-name {
+    font-family: var(--mono);
+    font-size: 13.5px;
+  }
+  .file-note {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: right;
+  }
+  .tree-divider {
+    grid-column: 1 / -1;
+    padding: 6px 20px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: var(--accent-blue-dim);
+    border-bottom: 1px solid var(--border);
+  }
+  /* ── File detail cards ── */
+  .file-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .file-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    border-left: 3px solid var(--border);
+  }
+  .file-card[data-color="green"]  { border-left-color: var(--accent-green); }
+  .file-card[data-color="blue"]   { border-left-color: var(--accent-blue); }
+  .file-card[data-color="amber"]  { border-left-color: var(--accent-amber); }
+  .file-card[data-color="red"]    { border-left-color: var(--accent-red); }
+  .file-card[data-color="purple"] { border-left-color: var(--accent-purple); }
+  .file-card-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .file-card-name {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .file-card-role {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  .file-card p {
+    font-size: 14.5px;
+    line-height: 1.75;
+  }
+  .file-card .contains {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+  .contains strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  /* ── Task lookup ── */
+  .task-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .task-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+  }
+  .task-label {
+    font-size: 14.5px;
+  }
+  .task-file {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .task-file.green  { background: var(--accent-green-dim); color: var(--accent-green); }
+  .task-file.blue   { background: var(--accent-blue-dim); color: var(--accent-blue); }
+  .task-file.amber  { background: var(--accent-amber-dim); color: var(--accent-amber); }
+  .task-file.red    { background: var(--accent-red-dim); color: var(--accent-red); }
+  .task-file.purple { background: var(--accent-purple-dim); color: var(--accent-purple); }
+  /* ── Flow ── */
+  .flow-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+  }
+  .flow-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .flow-step:last-child { margin-bottom: 0; }
+  .flow-num {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    background: var(--accent-green-dim);
+    color: var(--accent-green);
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flow-text {
+    font-size: 14.5px;
+    line-height: 1.65;
+    padding-top: 4px;
+  }
+  .flow-text code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    padding: 1px 7px;
+    border-radius: 4px;
+    color: var(--accent-blue);
+  }
+  .flow-subtitle {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-green);
+    margin-bottom: 12px;
+    margin-top: 28px;
+  }
+  .flow-subtitle:first-of-type {
+    margin-top: 0;
+  }
+  /* ── Services ── */
+  .services-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .service-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    align-items: center;
+  }
+  .service-name {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-green);
+  }
+  .service-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .header h1 { font-size: 1.8rem; }
+    .file-row { grid-template-columns: 24px 1fr; }
+    .file-note { display: none; }
+    .task-row { grid-template-columns: 1fr; gap: 8px; }
+    .service-row { grid-template-columns: 1fr; gap: 4px; }
+    .flow-box { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- ══════ HEADER ══════ -->
+  <div class="header">
+    <div class="header-badge">Developer Guide</div>
+    <h1>SmartFeed</h1>
+    <p>A quick reference to every file in the repo — what it does, what's inside it, and where to go when you need to change something.</p>
+  </div>
+  <!-- ══════ SECTION 1: REPO MAP ══════ -->
+  <section>
+    <div class="section-label">01</div>
+    <div class="section-title">What You're Looking At</div>
+    <div class="section-desc">This is the file structure of the GitHub repo. Here's what each file and folder does.</div>
+    <div class="repo-tree">
+      <div class="repo-header">
+        <svg viewBox="0 0 16 16"><path d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9z"/></svg>
+        <span class="repo-name">smartfeed</span>
+        <span class="branch">main</span>
+      </div>
+      <div class="file-row">
+        <svg class="folder-icon" viewBox="0 0 16 16"><path d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"/></svg>
+        <span class="file-name">api/</span>
+        <span class="file-note">Backend functions (runs on server, not browser)</span>
+      </div>
+      <div class="file-row">
+        <svg class="file-icon" viewBox="0 0 16 16"><path d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6H9.75A1.75 1.75 0 018 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237v8.086A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V1.75z"/></svg>
+        <span class="file-name">.env.example</span>
+        <span class="file-note">Template showing which API keys are needed</span>
+      </div>
+      <div class="file-row">
+        <svg class="file-icon" viewBox="0 0 16 16"><path d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6H9.75A1.75 1.75 0 018 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237v8.086A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V1.75z"/></svg>
+        <span class="file-name">.gitignore</span>
+        <span class="file-note">Tells Git what NOT to upload</span>
+      </div>
+      <div class="file-row">
+        <svg class="file-icon" viewBox="0 0 16 16"><path d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6H9.75A1.75 1.75 0 018 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237v8.086A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V1.75z"/></svg>
+        <span class="file-name">app.js</span>
+        <span class="file-note">All the logic — the brain of the app</span>
+      </div>
+      <div class="file-row">
+        <svg class="file-icon" viewBox="0 0 16 16"><path d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6H9.75A1.75 1.75 0 018 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237v8.086A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V1.75z"/></svg>
+        <span class="file-name">index.html</span>
+        <span class="file-note">The webpage itself — structure &amp; layout</span>
+      </div>
+      <div class="file-row">
+        <svg class="file-icon" viewBox="0 0 16 16"><path d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6H9.75A1.75 1.75 0 018 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237v8.086A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V1.75z"/></svg>
+        <span class="file-name">style.css</span>
+        <span class="file-note">How everything looks — colors, fonts, layout</span>
+      </div>
+      <div class="file-row">
+        <svg class="file-icon" viewBox="0 0 16 16"><path d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6H9.75A1.75 1.75 0 018 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237v8.086A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V1.75z"/></svg>
+        <span class="file-name">vercel.json</span>
+        <span class="file-note">Tells Vercel how to deploy the app</span>
+      </div>
+      <div class="tree-divider">Inside api/</div>
+      <div class="file-row indent">
+        <svg class="file-icon" viewBox="0 0 16 16"><path d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6H9.75A1.75 1.75 0 018 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237v8.086A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V1.75z"/></svg>
+        <span class="file-name">config.js</span>
+        <span class="file-note">Securely hands API keys to the frontend</span>
+      </div>
+      <div class="file-row indent">
+        <svg class="file-icon" viewBox="0 0 16 16"><path d="M3.75 1.5a.25.25 0 00-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 00.25-.25V6H9.75A1.75 1.75 0 018 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237v8.086A1.75 1.75 0 0112.25 15h-8.5A1.75 1.75 0 012 13.25V1.75z"/></svg>
+        <span class="file-name">scan-label.js</span>
+        <span class="file-note">Sends nutrition label photos to Claude AI</span>
+      </div>
+    </div>
+  </section>
+  <!-- ══════ SECTION 2: FILE DETAILS ══════ -->
+  <section>
+    <div class="section-label">02</div>
+    <div class="section-title">What's Inside Each File</div>
+    <div class="section-desc">A closer look at what each file contains and what it's responsible for.</div>
+    <div class="file-cards">
+      <div class="file-card" data-color="green">
+        <div class="file-card-header">
+          <span class="file-card-name">index.html</span>
+          <span class="file-card-role">The skeleton</span>
+        </div>
+        <p>The single webpage that IS the entire app. This defines what's on the page and in what order — but not how it looks or how it behaves.</p>
+        <div class="contains">
+          <strong>What's inside:</strong> Hero section with address input &amp; GPS button · Results section with zone banner, score cards, nutrition scanner, and nearby places grid · Profile section with calorie targets and favorites · How-it-works strip · Stats strip · Footer · Popup modals for login, signup, goals, and suggestions
+        </div>
+      </div>
+      <div class="file-card" data-color="amber">
+        <div class="file-card-header">
+          <span class="file-card-name">style.css</span>
+          <span class="file-card-role">The skin</span>
+        </div>
+        <p>Every visual style for the entire app. Colors, fonts, spacing, animations, and mobile responsiveness. Zero logic — just how things look.</p>
+        <div class="contains">
+          <strong>What's inside:</strong> Color variables (green = healthy, amber = swamp, red = desert) · Hero background gradient · Zone banner colors · Score card grid · Nutrition progress bars · Places card layout · Modal styling · Mobile breakpoint at 768px
+        </div>
+      </div>
+      <div class="file-card" data-color="blue">
+        <div class="file-card-header">
+          <span class="file-card-name">app.js</span>
+          <span class="file-card-role">The brain</span>
+        </div>
+        <p>All the JavaScript logic. Every button click, API call, calculation, and screen change runs through here. This is where everything actually happens.</p>
+        <div class="contains">
+          <strong>What's inside:</strong> Supabase &amp; Google Maps setup · Login / signup / logout · Food desert detection using USDA + Census data · Zone classification (desert, swamp, or healthy) · Nearby places search with dietary &amp; budget filters · Nutrition label scanner (photo upload + product search) · Calorie calculator using Mifflin-St Jeor equation · Favorites &amp; community suggestions
+        </div>
+      </div>
+      <div class="file-card" data-color="purple">
+        <div class="file-card-header">
+          <span class="file-card-name">api/config.js</span>
+          <span class="file-card-role">The key dispenser</span>
+        </div>
+        <p>A tiny backend function that securely hands the Google Maps and USDA API keys to the frontend. Keeps secrets out of your public code.</p>
+      </div>
+      <div class="file-card" data-color="purple">
+        <div class="file-card-header">
+          <span class="file-card-name">api/scan-label.js</span>
+          <span class="file-card-role">The AI tunnel</span>
+        </div>
+        <p>Receives a photo of a nutrition label from the user, sends it to Claude AI to read it, and returns the calories, protein, carbs, and fat back to the app. The Anthropic API key never leaves this server-side file.</p>
+      </div>
+      <div class="file-card" data-color="red">
+        <div class="file-card-header">
+          <span class="file-card-name">vercel.json</span>
+          <span class="file-card-role">Deployment config</span>
+        </div>
+        <p>Tells Vercel two things: how to route API requests to the backend functions, and which security headers to set so the frontend can talk to the backend.</p>
+      </div>
+      <div class="file-card" data-color="red">
+        <div class="file-card-header">
+          <span class="file-card-name">.env.example</span>
+          <span class="file-card-role">Secret key template</span>
+        </div>
+        <p>A reference showing which API keys the app needs (Google Maps, USDA, Anthropic). The real keys live in Vercel's environment variables — never in the code.</p>
+      </div>
+      <div class="file-card" data-color="red">
+        <div class="file-card-header">
+          <span class="file-card-name">.gitignore</span>
+          <span class="file-card-role">Privacy guard</span>
+        </div>
+        <p>Tells Git to ignore secret files and build artifacts so they never get pushed to GitHub.</p>
+      </div>
+    </div>
+  </section>
+  <!-- ══════ SECTION 3: TASK LOOKUP ══════ -->
+  <section>
+    <div class="section-label">03</div>
+    <div class="section-title">I Want to Change Something</div>
+    <div class="section-desc">Find the right file fast. Here's where to go based on what you're trying to do.</div>
+    <div class="task-grid">
+      <div class="task-row">
+        <span class="task-label">Change a color, font, or spacing</span>
+        <span class="task-file amber">style.css</span>
+      </div>
+      <div class="task-row">
+        <span class="task-label">Change the zone banner colors (red / amber / green)</span>
+        <span class="task-file amber">style.css</span>
+      </div>
+      <div class="task-row">
+        <span class="task-label">Add or remove a section on the page</span>
+        <span class="task-file green">index.html</span>
+      </div>
+      <div class="task-row">
+        <span class="task-label">Change the text on a button or heading</span>
+        <span class="task-file green">index.html</span>
+      </div>
+      <div class="task-row">
+        <span class="task-label">Add a new popup modal</span>
+        <span class="task-file green">index.html</span>
+      </div>
+      <div class="task-row">
+        <span class="task-label">Change what happens when "Detect" is clicked</span>
+        <span class="task-file blue">app.js</span>
+      </div>
+      <div class="task-row">
+        <span class="task-label">Change how food deserts are classified</span>
+        <span class="task-file blue">app.js</span>
+      </div>
+      <div class="task-row">
+        <span class="task-label">Change the nearby places search radius or filters</span>
+        <span class="task-file blue">app.js</span>
+      </div>
+      <div class="task-row">
+        <span class="task-label">Change the calorie or macro calculation</span>
+        <span class="task-file blue">app.js</span>
+      </div>
+      <div class="task-row">
+        <span class="task-label">Fix login, signup, or logout</span>
+        <span class="task-file blue">app.js</span>
+      </div>
+      <div class="task-row">
+        <span class="task-label">Change how nutrition labels are scanned</span>
+        <span class="task-file purple">api/scan-label.js</span>
+      </div>
+      <div class="task-row">
+        <span class="task-label">Add or update an API key</span>
+        <span class="task-file purple">api/config.js</span>
+      </div>
+      <div class="task-row">
+        <span class="task-label">Change how the app is deployed</span>
+        <span class="task-file red">vercel.json</span>
+      </div>
+    </div>
+  </section>
+  <!-- ══════ SECTION 4: FLOW ══════ -->
+  <section>
+    <div class="section-label">04</div>
+    <div class="section-title">How It All Connects</div>
+    <div class="section-desc">The two main things a user can do — and how each one works behind the scenes.</div>
+    <div class="flow-subtitle">Flow 1: Detect My Zone</div>
+    <div class="flow-box">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-text">User enters an address or clicks "Use My Location" → <code>app.js</code> converts it to coordinates using Google Maps</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-text">Coordinates are sent to the US Census Bureau to find the <strong>census tract</strong></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-text">Census tract is checked against the <strong>USDA Food Access Research Atlas</strong> for official food desert data</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-text">Zone banner turns <strong style="color:var(--accent-red)">red</strong> (desert), <strong style="color:var(--accent-amber)">amber</strong> (swamp), or <strong style="color:var(--accent-green)">green</strong> (healthy)</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">5</div>
+        <div class="flow-text"><code>app.js</code> searches Google Places for nearby grocery stores, farmers markets, and health food stores within half a mile</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">6</div>
+        <div class="flow-text">Results render as place cards — sorted by distance, filterable by diet and budget</div>
+      </div>
+    </div>
+    <div class="flow-subtitle">Flow 2: Scan My Food</div>
+    <div class="flow-box">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-text">User uploads a photo of a nutrition label <strong>or</strong> searches a product by name</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-text"><strong>Photo path:</strong> <code>app.js</code> converts the image to base64 and sends it to <code>api/scan-label.js</code></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-text"><code>scan-label.js</code> forwards the image to <strong>Claude AI</strong>, which reads the label and returns calories, protein, carbs, and fat as JSON</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-text"><strong>Search path:</strong> <code>app.js</code> queries the <strong>Open Food Facts</strong> API to find nutrition data by product name</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">5</div>
+        <div class="flow-text"><code>app.js</code> displays the results as color-coded progress bars showing what percentage of your daily target each macro represents</div>
+      </div>
+    </div>
+  </section>
+  <!-- ══════ SECTION 5: EXTERNAL SERVICES ══════ -->
+  <section>
+    <div class="section-label">05</div>
+    <div class="section-title">External Services</div>
+    <div class="section-desc">APIs and services SmartFeed connects to.</div>
+    <div class="services-grid">
+      <div class="service-row">
+        <span class="service-name">Supabase</span>
+        <span class="service-desc">User accounts, database, favorites, and community suggestions</span>
+      </div>
+      <div class="service-row">
+        <span class="service-name">Google Maps</span>
+        <span class="service-desc">Address lookup, nearby places search, and distance calculations</span>
+      </div>
+      <div class="service-row">
+        <span class="service-name">USDA Atlas</span>
+        <span class="service-desc">Official government food desert and food access data</span>
+      </div>
+      <div class="service-row">
+        <span class="service-name">Census Bureau</span>
+        <span class="service-desc">Converts GPS coordinates into census tract numbers (free, no key needed)</span>
+      </div>
+      <div class="service-row">
+        <span class="service-name">Claude AI</span>
+        <span class="service-desc">Reads nutrition labels from uploaded photos</span>
+      </div>
+      <div class="service-row">
+        <span class="service-name">Open Food Facts</span>
+        <span class="service-desc">Searches products by name for nutrition data (free, no key needed)</span>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>
