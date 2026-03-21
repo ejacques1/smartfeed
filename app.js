@@ -290,28 +290,45 @@ async function _classifyZone(lat, lng) {
 
 function _fetchPlaces(lat, lng, dietaryKeyword) {
   const HALF_MILE_M = 805;  // half mile in meters
-  const baseKw = 'grocery store supermarket farmers market health food';
-  const keyword = dietaryKeyword ? `${dietaryKeyword} ${baseKw}` : baseKw;
+  const svc = new google.maps.places.PlacesService(document.createElement('div'));
+  const origin = new google.maps.LatLng(lat, lng);
+  const baseOpts = { location: origin, radius: HALF_MILE_M };
+
+  // Multiple searches to cast a wide net
+  const searches = [
+    { ...baseOpts, type: 'grocery_or_supermarket' },
+    { ...baseOpts, keyword: 'health food store' },
+    { ...baseOpts, keyword: 'farmers market' },
+    { ...baseOpts, keyword: 'organic food' },
+  ];
+  if (dietaryKeyword) {
+    searches.push({ ...baseOpts, keyword: dietaryKeyword });
+  }
+
   return new Promise(resolve => {
-    const svc = new google.maps.places.PlacesService(document.createElement('div'));
-    const origin = new google.maps.LatLng(lat, lng);
-    svc.nearbySearch({
-      location: origin,
-      radius: HALF_MILE_M,
-      keyword
-    }, (results, status) => {
-      if (status !== 'OK' || !results) return resolve([]);
-      // Double-check distance and sort closest first
-      const filtered = results
-        .map(p => ({
-          ...p,
-          _distM: google.maps.geometry.spherical.computeDistanceBetween(origin, p.geometry.location)
-        }))
-        .filter(p => p._distM <= HALF_MILE_M)
-        .sort((a, b) => a._distM - b._distM)
-        .slice(0, 12);
-      resolve(filtered);
-    });
+    const seen = new Map();
+    let pending = searches.length;
+
+    function collect(results, status) {
+      if (status === 'OK' && results) {
+        results.forEach(p => {
+          if (!seen.has(p.place_id)) seen.set(p.place_id, p);
+        });
+      }
+      if (--pending === 0) {
+        const combined = Array.from(seen.values())
+          .map(p => ({
+            ...p,
+            _distM: google.maps.geometry.spherical.computeDistanceBetween(origin, p.geometry.location)
+          }))
+          .filter(p => p._distM <= HALF_MILE_M)
+          .sort((a, b) => a._distM - b._distM)
+          .slice(0, 20);
+        resolve(combined);
+      }
+    }
+
+    searches.forEach(opts => svc.nearbySearch(opts, collect));
   });
 }
 
