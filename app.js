@@ -9,17 +9,22 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 let GOOGLE_MAPS_KEY = '';
 let USDA_API_KEY    = '';
 
-const { createClient } = supabase;
 let sb;
 try {
+  const { createClient } = supabase;
+  let canPersist = false;
+  try { localStorage.setItem('_test', '1'); localStorage.removeItem('_test'); canPersist = true; } catch (_) {}
   sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: typeof localStorage !== 'undefined', autoRefreshToken: true }
+    auth: { persistSession: canPersist, autoRefreshToken: canPersist }
   });
 } catch (e) {
-  // Fallback for private browsing modes that block storage
-  sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
+  console.warn('Supabase unavailable:', e.message);
+  // Stub so the rest of the app doesn't crash
+  const _noop = () => Promise.resolve({ data: null, error: null });
+  const _noopAuth = { onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    signUp: _noop, signInWithPassword: _noop, signOut: _noop, getSession: _noop, resetPasswordForEmail: _noop };
+  sb = { from: () => ({ select: _noop, insert: _noop, upsert: _noop, update: _noop, delete: _noop,
+    eq: function() { return this; }, single: _noop, order: function() { return this; } }), auth: _noopAuth };
 }
 
 let mapsReady = false;
