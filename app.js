@@ -308,6 +308,21 @@ function _fetchPlaces(lat, lng, dietaryKeyword) {
   return new Promise(resolve => {
     const seen = new Map();
     let pending = searches.length;
+    let resolved = false;
+
+    function finish() {
+      if (resolved) return;
+      resolved = true;
+      const combined = Array.from(seen.values())
+        .map(p => ({
+          ...p,
+          _distM: google.maps.geometry.spherical.computeDistanceBetween(origin, p.geometry.location)
+        }))
+        .filter(p => p._distM <= HALF_MILE_M)
+        .sort((a, b) => a._distM - b._distM)
+        .slice(0, 20);
+      resolve(combined);
+    }
 
     function collect(results, status) {
       if (status === 'OK' && results) {
@@ -315,18 +330,11 @@ function _fetchPlaces(lat, lng, dietaryKeyword) {
           if (!seen.has(p.place_id)) seen.set(p.place_id, p);
         });
       }
-      if (--pending === 0) {
-        const combined = Array.from(seen.values())
-          .map(p => ({
-            ...p,
-            _distM: google.maps.geometry.spherical.computeDistanceBetween(origin, p.geometry.location)
-          }))
-          .filter(p => p._distM <= HALF_MILE_M)
-          .sort((a, b) => a._distM - b._distM)
-          .slice(0, 20);
-        resolve(combined);
-      }
+      if (--pending === 0) finish();
     }
+
+    // Safety timeout — resolve with whatever we have after 8 seconds
+    setTimeout(finish, 8000);
 
     searches.forEach(opts => svc.nearbySearch(opts, collect));
   });
