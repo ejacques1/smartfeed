@@ -10,7 +10,17 @@ let GOOGLE_MAPS_KEY = '';
 let USDA_API_KEY    = '';
 
 const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let sb;
+try {
+  sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: typeof localStorage !== 'undefined', autoRefreshToken: true }
+  });
+} catch (e) {
+  // Fallback for private browsing modes that block storage
+  sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+}
 
 let mapsReady = false;
 window._onMapsReady = () => { mapsReady = true; };
@@ -47,11 +57,16 @@ let allPlaces     = [];
 // ═══════════════════════════════════════════════════════
 // AUTH STATE
 // ═══════════════════════════════════════════════════════
-sb.auth.onAuthStateChange(async (_event, session) => {
-  currentUser = session?.user ?? null;
+try {
+  sb.auth.onAuthStateChange(async (_event, session) => {
+    currentUser = session?.user ?? null;
+    _updateNav();
+    if (currentUser) { await loadProfile(); await loadFavorites(); }
+  });
+} catch (e) {
+  console.warn('Auth listener unavailable (private browsing mode)');
   _updateNav();
-  if (currentUser) { await loadProfile(); await loadFavorites(); }
-});
+}
 
 function _updateNav() {
   const in_ = !!currentUser;
