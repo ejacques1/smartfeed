@@ -1,0 +1,10 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="#0f1f14"/>
+
+  <!-- Stylized S -->
+  <text x="256" y="390" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="380" fill="#24a866" text-anchor="middle">S</text>
+
+  <!-- Green dot accent -->
+  <circle cx="390" cy="120" r="28" fill="#24a866" opacity="0.6"/>
+</svg>
