@@ -236,6 +236,7 @@
 <footer>
   <div class="logo"><span class="ldot"></span>SmartFeed</div>
   <div>Data: USDA Food Access Research Atlas · Built for public health 🌿</div>
+  <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap"><a href="/terms" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem">Terms & Privacy</a><a href="/about" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem">About Us</a></div>
   <div>© 2026 SmartFeed</div>
 </footer>
 
@@ -290,6 +291,10 @@
       <div class="fg"><label>Weekly Food Budget</label>
         <select id="su-budget"><option>Under $25</option><option>$25–$50</option><option>$50–$100</option><option>$100+</option></select>
       </div>
+    </div>
+    <div style="margin:12px 0;display:flex;align-items:flex-start;gap:8px">
+      <input type="checkbox" id="su-terms" style="margin-top:3px;accent-color:var(--g)"/>
+      <label for="su-terms" style="font-size:.82rem;color:#5a6e60;line-height:1.4">I am at least 18 years old and agree to the <a href="/terms" target="_blank" style="color:var(--g);text-decoration:underline">Terms of Service & Privacy Policy</a></label>
     </div>
     <div class="err" id="su-err"></div>
     <div class="modal-actions">

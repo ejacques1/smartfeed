@@ -114,6 +114,7 @@ async function signUp() {
   const activity = parseFloat(val('su-activity'));
   const diet     = val('su-diet'), budget = val('su-budget');
   if (!email || !password) { showErr('su-err', 'Email and password required.'); return; }
+  if (!document.getElementById('su-terms').checked) { showErr('su-err', 'Please agree to the Terms of Service & Privacy Policy.'); return; }
   const { data, error } = await sb.auth.signUp({ email, password });
   if (error) { showErr('su-err', error.message); return; }
   if (data.user) {

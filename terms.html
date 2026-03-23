@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartFeed — Terms & Privacy</title>
+<link rel="icon" type="image/svg+xml" href="/images/favicon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --g: #1a7a4a; --gl: #24a866; --gxl: #d4f5e4;
+    --ink: #0f1f14; --mist: #f2f7f4; --w: #fff;
+    --border: #d5e8dc; --text-muted: #5a6e60;
+    --radius: 16px; --sh: 0 4px 24px rgba(15,31,20,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--mist); color: var(--ink); line-height: 1.7; }
+  .about-nav {
+    background: var(--ink); display: flex; align-items: center;
+    justify-content: space-between; padding: 20px 48px; flex-wrap: wrap;
+  }
+  .about-nav .logo {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem;
+    color: #fff; text-decoration: none; display: flex; align-items: center; gap: 8px;
+  }
+  .about-nav .ldot { width: 10px; height: 10px; border-radius: 50%; background: var(--gl); }
+  .about-nav .navlinks { display: flex; gap: 28px; }
+  .about-nav .navlinks a {
+    color: rgba(255,255,255,0.7); text-decoration: none;
+    font-size: 0.92rem; font-weight: 500; transition: color 0.2s;
+  }
+  .about-nav .navlinks a:hover { color: #fff; }
+  .hamburger {
+    display: none; background: none; border: none; cursor: pointer;
+    padding: 6px; flex-direction: column; gap: 5px; z-index: 100;
+  }
+  .hamburger span { display: block; width: 24px; height: 2px; background: #fff; border-radius: 2px; transition: transform 0.3s, opacity 0.3s; }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .container { max-width: 760px; margin: 0 auto; padding: 60px 24px 100px; }
+  h1 {
+    font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800;
+    margin-bottom: 8px; color: var(--ink);
+  }
+  .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 48px; }
+  h2 {
+    font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 800;
+    color: var(--g); margin: 40px 0 12px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  h2:first-of-type { border-top: none; margin-top: 0; }
+  p, li { font-size: 0.95rem; color: var(--ink); margin-bottom: 12px; }
+  ul { padding-left: 24px; margin-bottom: 16px; }
+  li { margin-bottom: 6px; }
+  strong { color: var(--ink); }
+  .highlight-box {
+    background: var(--w); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 24px; margin: 24px 0; box-shadow: var(--sh); border-left: 4px solid var(--gl);
+  }
+  .highlight-box p { margin-bottom: 8px; }
+  .highlight-box p:last-child { margin-bottom: 0; }
+  .contact-box {
+    background: var(--gxl); border-radius: var(--radius); padding: 24px; margin-top: 32px;
+  }
+  .contact-box p { color: var(--ink); margin-bottom: 4px; }
+  .footer {
+    text-align: center; padding: 32px 24px; color: var(--text-muted);
+    font-size: 13px; border-top: 1px solid var(--border);
+  }
+  .footer a { color: var(--gl); text-decoration: none; font-weight: 600; }
+  .footer a:hover { text-decoration: underline; }
+  @media (max-width: 640px) {
+    .about-nav { padding: 16px 20px; }
+    .hamburger { display: flex; }
+    .about-nav .navlinks {
+      display: none; width: 100%; order: 10;
+      flex-direction: column; gap: 16px; padding: 16px 0 8px;
+    }
+    .about-nav .navlinks.open { display: flex; }
+    h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="about-nav">
+  <a href="/" class="logo"><span class="ldot"></span>SmartFeed</a>
+  <button class="hamburger" onclick="this.classList.toggle('open');this.parentElement.querySelector('.navlinks').classList.toggle('open')" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="navlinks">
+    <a href="/">Home</a>
+    <a href="/#how">How it works</a>
+    <a href="/#why">Why it matters</a>
+    <a href="/about">About us</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <h1>Terms of Service & Privacy Policy</h1>
+  <p class="subtitle">Last updated: March 23, 2026</p>
+
+  <div class="highlight-box">
+    <p><strong>The short version:</strong> SmartFeed is a free, independent student project. We collect only what's needed to personalize your experience. We never sell your data. You can delete your account at any time. This app is not affiliated with or endorsed by York College or CUNY.</p>
+  </div>
+
+  <!-- ════════════════════════════════ -->
+  <h2>1. What is SmartFeed?</h2>
+  <p>SmartFeed is a free web application that helps users explore food access in their neighborhood using publicly available USDA data and nearby store information. It was created as an independent project by Public Health students, with faculty advisory support. SmartFeed provides <strong>general information only</strong> — it is not medical, nutritional, or dietary advice.</p>
+
+  <!-- ════════════════════════════════ -->
+  <h2>2. Non-Affiliation Disclaimer</h2>
+  <p><strong>SmartFeed is not affiliated with, endorsed by, operated by, or funded by York College, the City University of New York (CUNY), or any of their departments.</strong> It is an independent student-led project. Faculty advisors participated in a voluntary, advisory capacity only. York College and CUNY bear no responsibility for the app, its content, or any data collected through it.</p>
+
+  <!-- ════════════════════════════════ -->
+  <h2>3. Who Can Use SmartFeed</h2>
+  <p>You must be <strong>at least 18 years old</strong> to create an account and use SmartFeed. By signing up, you confirm that you are 18 or older. We do not knowingly collect information from anyone under 18. If we learn that a user is under 18, we will delete their account and data promptly.</p>
+
+  <!-- ════════════════════════════════ -->
+  <h2>4. What Data We Collect</h2>
+  <p>We collect only what's necessary to make SmartFeed work for you:</p>
+
+  <p><strong>Account information:</strong></p>
+  <ul>
+    <li>Email address (for login and account verification)</li>
+    <li>Password (encrypted — we never see or store it in plain text)</li>
+  </ul>
+
+  <p><strong>Optional profile information (you choose whether to provide this):</strong></p>
+  <ul>
+    <li>Age, gender, weight, and height (used to calculate personalized calorie and nutrition targets)</li>
+    <li>Activity level and dietary preferences (used to tailor food recommendations)</li>
+    <li>Weekly food budget (used to filter affordable options)</li>
+  </ul>
+
+  <p><strong>Usage data (collected automatically when you use the app):</strong></p>
+  <ul>
+    <li>Addresses or zip codes you search (to show nearby food options and zone classifications)</li>
+    <li>GPS location, only if you click "Use My Current Location" and grant browser permission</li>
+    <li>Places you save to your favorites</li>
+    <li>Food places you suggest to the community</li>
+  </ul>
+
+  <p><strong>Nutrition label scans:</strong></p>
+  <ul>
+    <li>If you use the label scanner, your photo is sent to an AI service (Anthropic Claude) for analysis</li>
+    <li>The image is processed in real time and <strong>not stored</strong> on our servers or in our database</li>
+  </ul>
+
+  <!-- ════════════════════════════════ -->
+  <h2>5. What We Do NOT Collect</h2>
+  <ul>
+    <li>Social Security numbers</li>
+    <li>Credit card or payment information</li>
+    <li>Medical records or health insurance information</li>
+    <li>Student ID numbers or academic records</li>
+    <li>Phone numbers</li>
+    <li>Information from anyone under 18</li>
+  </ul>
+
+  <!-- ════════════════════════════════ -->
+  <h2>6. How We Use Your Data</h2>
+  <p>Your data is used solely to:</p>
+  <ul>
+    <li>Create and maintain your account</li>
+    <li>Calculate personalized nutrition targets based on your profile</li>
+    <li>Show food access zones and nearby healthy food options for locations you search</li>
+    <li>Save your favorite places so you can find them again</li>
+    <li>Improve the app's food place suggestions</li>
+  </ul>
+  <p><strong>We do not sell, rent, trade, or share your personal data with any third party for marketing or commercial purposes. Period.</strong></p>
+
+  <!-- ════════════════════════════════ -->
+  <h2>7. Third-Party Services</h2>
+  <p>SmartFeed uses the following third-party services to function. Each has its own privacy policy:</p>
+  <ul>
+    <li><strong>Supabase</strong> — Hosts our database and handles authentication. Your data is encrypted in transit (TLS) and at rest. <a href="https://supabase.com/privacy" target="_blank" style="color:var(--gl)">Supabase Privacy Policy</a></li>
+    <li><strong>Google Maps Platform</strong> — Provides maps and nearby place search results. Your search location is sent to Google to retrieve results. <a href="https://policies.google.com/privacy" target="_blank" style="color:var(--gl)">Google Privacy Policy</a></li>
+    <li><strong>USDA Food Access Research Atlas</strong> — Public government data used to classify food access zones. No personal data is sent to the USDA.</li>
+    <li><strong>Anthropic (Claude AI)</strong> — Processes nutrition label photos for the scanner feature. Images are processed and not retained. <a href="https://www.anthropic.com/privacy" target="_blank" style="color:var(--gl)">Anthropic Privacy Policy</a></li>
+    <li><strong>Open Food Facts</strong> — Public database used for product nutrition lookups. No personal data is sent.</li>
+    <li><strong>Vercel</strong> — Hosts the SmartFeed website. <a href="https://vercel.com/legal/privacy-policy" target="_blank" style="color:var(--gl)">Vercel Privacy Policy</a></li>
+  </ul>
+
+  <!-- ════════════════════════════════ -->
+  <h2>8. How We Protect Your Data</h2>
+  <ul>
+    <li>All data transmitted between your browser and our servers is encrypted using HTTPS/TLS</li>
+    <li>Passwords are hashed using bcrypt — we never store or see your plain-text password</li>
+    <li>Our database uses Row Level Security (RLS), meaning each user can only access their own data</li>
+    <li>Sensitive API keys are stored as server-side environment variables, not in client-side code</li>
+    <li>Email confirmation is required before your account is activated</li>
+  </ul>
+
+  <!-- ════════════════════════════════ -->
+  <h2>9. Your Rights</h2>
+  <p>You have the right to:</p>
+  <ul>
+    <li><strong>Access</strong> your data — View your profile and saved information at any time within the app</li>
+    <li><strong>Update</strong> your data — Edit your profile, goals, and preferences at any time</li>
+    <li><strong>Delete</strong> your data — Request full deletion of your account and all associated data by emailing us (see below)</li>
+    <li><strong>Withdraw consent</strong> — Stop using the app at any time; revoke location permissions through your browser settings</li>
+  </ul>
+  <p>Under the New York SHIELD Act, we are committed to implementing reasonable safeguards to protect your personal information. In the unlikely event of a data breach affecting your personal information, we will notify you as required by applicable law.</p>
+
+  <!-- ════════════════════════════════ -->
+  <h2>10. Cookies & Local Storage</h2>
+  <p>SmartFeed uses browser <strong>local storage</strong> (not cookies) to keep you logged in between visits. This stores a session token on your device. You can clear this at any time through your browser settings, which will log you out. We do not use tracking cookies, advertising cookies, or analytics cookies.</p>
+
+  <!-- ════════════════════════════════ -->
+  <h2>11. No Medical or Nutritional Advice</h2>
+  <p>SmartFeed is an informational tool. Calorie calculations, nutrition targets, food zone classifications, and store listings are provided for <strong>general educational purposes only</strong>. They are not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider before making dietary changes, especially if you have existing health conditions.</p>
+
+  <!-- ════════════════════════════════ -->
+  <h2>12. Limitation of Liability</h2>
+  <p>SmartFeed is provided "as is" without warranties of any kind. We make reasonable efforts to ensure accuracy, but we cannot guarantee that food zone classifications, store listings, nutrition data, or calorie calculations are complete or error-free. The SmartFeed team, its student creators, and faculty advisors are not liable for any decisions made based on information provided by the app.</p>
+
+  <!-- ════════════════════════════════ -->
+  <h2>13. Changes to This Policy</h2>
+  <p>We may update this policy from time to time. If we make significant changes, we will update the "Last updated" date at the top of this page. Your continued use of SmartFeed after changes are posted constitutes your acceptance of the updated terms.</p>
+
+  <!-- ════════════════════════════════ -->
+  <h2>14. Contact Us</h2>
+  <div class="contact-box">
+    <p><strong>Questions about your data or this policy?</strong></p>
+    <p>Email us at: <strong>smartfeednyc@gmail.com</strong></p>
+    <p>To request account deletion, email us with the subject line: <strong>"Delete My Account"</strong></p>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <p>NYC SmartFeed &mdash; A student initiative from <a href="https://www.york.cuny.edu" target="_blank">York College, CUNY</a></p>
+</footer>
+
+</body>
+</html>
