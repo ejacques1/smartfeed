@@ -66,7 +66,7 @@
     gap: 28px;
   }
   .about-nav .navlinks a {
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.85);
     text-decoration: none;
     font-size: 0.92rem;
     font-weight: 500;
@@ -267,6 +267,25 @@
   .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
   .hamburger.open span:nth-child(2) { opacity: 0; }
   .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--g);
+    color: #fff;
+    padding: 8px 16px;
+    z-index: 200;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 0 0 8px 0;
+  }
+  .skip-link:focus { top: 0; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--g);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
   /* ── Responsive ── */
   @media (max-width: 640px) {
     .about-nav { padding: 16px 20px; flex-wrap: wrap; }
@@ -289,11 +308,12 @@
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <!-- ══════ NAV BAR ══════ -->
 <nav class="about-nav">
   <a href="/" class="logo"><span class="ldot"></span>SmartFeed</a>
-  <button class="hamburger" onclick="this.classList.toggle('open');this.parentElement.querySelector('.navlinks').classList.toggle('open')" aria-label="Menu">
+  <button class="hamburger" aria-expanded="false" onclick="this.classList.toggle('open');this.parentElement.querySelector('.navlinks').classList.toggle('open');this.setAttribute('aria-expanded',this.classList.contains('open'))" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
   <div class="navlinks">
@@ -304,6 +324,7 @@
   </div>
 </nav>
 
+<main id="main-content">
 <div class="container">
   <!-- ══════ HEADER ══════ -->
   <div class="header">
@@ -315,7 +336,7 @@
   <!-- ══════ ABOUT ══════ -->
   <section>
     <div class="section-label">The Initiative</div>
-    <div class="section-title">An Independent Student Project</div>
+    <h2 class="section-title">An Independent Student Project</h2>
     <div class="initiative-box">
       <p><strong>NYC SmartFeed</strong> is an independent project created by Public Health students at <strong>York College, CUNY</strong>. Born out of firsthand experience with food access challenges on and around campus, the team set out to build a tool that helps college students find affordable, healthy food options in their neighborhoods &mdash; powered by real USDA data and AI. The project's AI development was spearheaded by <strong>Dr. Erin Jacques</strong>, and the public health content and marketing were reviewed by faculty advisors within the Public Health program.</p>
     </div>
@@ -324,7 +345,7 @@
   <!-- ══════ MISSION ══════ -->
   <section>
     <div class="section-label">Our Mission</div>
-    <div class="section-title">Why We Built SmartFeed</div>
+    <h2 class="section-title">Why We Built SmartFeed</h2>
     <div class="mission-box">
       <p>Millions of Americans live in neighborhoods classified by the USDA as low-income and low-access areas &mdash; places where supermarkets and fresh food are hard to reach. Many college students face these barriers daily: tight budgets, packed schedules, and food environments dominated by fast food. <strong>SmartFeed</strong> was built to help students understand their food environment, find healthier options nearby, and make informed nutritional choices &mdash; because eating well shouldn't depend on your zip code.</p>
     </div>
@@ -333,7 +354,7 @@
   <!-- ══════ STUDENT TEAM ══════ -->
   <section>
     <div class="section-label">Student Team</div>
-    <div class="section-title">The People Behind SmartFeed</div>
+    <h2 class="section-title">The People Behind SmartFeed</h2>
     <div class="section-desc">Public Health students at York College, CUNY who designed, built, and launched this project.</div>
 
     <div class="team-grid">
@@ -374,7 +395,7 @@
   <!-- ══════ ADVISORS ══════ -->
   <section>
     <div class="section-label">Acknowledgments</div>
-    <div class="section-title">Faculty &amp; Advisors</div>
+    <h2 class="section-title">Faculty &amp; Advisors</h2>
     <div class="section-desc">Faculty at York College, CUNY who supported this project through technical leadership, content review, and advisory guidance.</div>
 
     <div class="advisors-grid">
@@ -397,10 +418,11 @@
     </div>
   </section>
 </div>
+</main>
 
 <footer class="about-footer">
   <p><a href="/terms">Terms & Privacy</a></p>
-  <p>NYC SmartFeed &mdash; A student initiative from <a href="https://www.york.cuny.edu" target="_blank">York College, CUNY</a></p>
+  <p>NYC SmartFeed &mdash; An initiative by students of <a href="https://www.york.cuny.edu" target="_blank">York College, CUNY</a></p>
 </footer>
 
 </body>

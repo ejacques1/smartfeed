@@ -26,7 +26,7 @@
   .about-nav .ldot { width: 10px; height: 10px; border-radius: 50%; background: var(--gl); }
   .about-nav .navlinks { display: flex; gap: 28px; }
   .about-nav .navlinks a {
-    color: rgba(255,255,255,0.7); text-decoration: none;
+    color: rgba(255,255,255,0.85); text-decoration: none;
     font-size: 0.92rem; font-weight: 500; transition: color 0.2s;
   }
   .about-nav .navlinks a:hover { color: #fff; }
@@ -70,6 +70,25 @@
   }
   .footer a { color: var(--gl); text-decoration: none; font-weight: 600; }
   .footer a:hover { text-decoration: underline; }
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--g);
+    color: #fff;
+    padding: 8px 16px;
+    z-index: 200;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 0 0 8px 0;
+  }
+  .skip-link:focus { top: 0; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--g);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
   @media (max-width: 640px) {
     .about-nav { padding: 16px 20px; }
     .hamburger { display: flex; }
@@ -83,10 +102,11 @@
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <nav class="about-nav">
   <a href="/" class="logo"><span class="ldot"></span>SmartFeed</a>
-  <button class="hamburger" onclick="this.classList.toggle('open');this.parentElement.querySelector('.navlinks').classList.toggle('open')" aria-label="Menu">
+  <button class="hamburger" aria-expanded="false" onclick="this.classList.toggle('open');this.parentElement.querySelector('.navlinks').classList.toggle('open');this.setAttribute('aria-expanded',this.classList.contains('open'))" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
   <div class="navlinks">
@@ -97,6 +117,7 @@
   </div>
 </nav>
 
+<main id="main-content">
 <div class="container">
 
   <h1>Terms of Service & Privacy Policy</h1>
@@ -176,12 +197,12 @@
   <h2>7. Third-Party Services</h2>
   <p>SmartFeed uses the following third-party services to function. Each has its own privacy policy:</p>
   <ul>
-    <li><strong>Supabase</strong> — Hosts our database and handles authentication. Your data is encrypted in transit (TLS) and at rest. <a href="https://supabase.com/privacy" target="_blank" style="color:var(--gl)">Supabase Privacy Policy</a></li>
-    <li><strong>Google Maps Platform</strong> — Provides maps and nearby place search results. Your search location is sent to Google to retrieve results. <a href="https://policies.google.com/privacy" target="_blank" style="color:var(--gl)">Google Privacy Policy</a></li>
+    <li><strong>Supabase</strong> — Hosts our database and handles authentication. Your data is encrypted in transit (TLS) and at rest. <a href="https://supabase.com/privacy" target="_blank" style="color:var(--gl)" aria-label="Supabase Privacy Policy (opens in new tab)">Supabase Privacy Policy</a></li>
+    <li><strong>Google Maps Platform</strong> — Provides maps and nearby place search results. Your search location is sent to Google to retrieve results. <a href="https://policies.google.com/privacy" target="_blank" style="color:var(--gl)" aria-label="Google Privacy Policy (opens in new tab)">Google Privacy Policy</a></li>
     <li><strong>USDA Food Access Research Atlas</strong> — Public government data used to classify food access zones. No personal data is sent to the USDA.</li>
-    <li><strong>Anthropic (Claude AI)</strong> — Processes nutrition label photos for the scanner feature. Images are processed and not retained. <a href="https://www.anthropic.com/privacy" target="_blank" style="color:var(--gl)">Anthropic Privacy Policy</a></li>
+    <li><strong>Anthropic (Claude AI)</strong> — Processes nutrition label photos for the scanner feature. Images are processed and not retained. <a href="https://www.anthropic.com/privacy" target="_blank" style="color:var(--gl)" aria-label="Anthropic Privacy Policy (opens in new tab)">Anthropic Privacy Policy</a></li>
     <li><strong>Open Food Facts</strong> — Public database used for product nutrition lookups. No personal data is sent.</li>
-    <li><strong>Vercel</strong> — Hosts the SmartFeed website. <a href="https://vercel.com/legal/privacy-policy" target="_blank" style="color:var(--gl)">Vercel Privacy Policy</a></li>
+    <li><strong>Vercel</strong> — Hosts the SmartFeed website. <a href="https://vercel.com/legal/privacy-policy" target="_blank" style="color:var(--gl)" aria-label="Vercel Privacy Policy (opens in new tab)">Vercel Privacy Policy</a></li>
   </ul>
 
   <!-- ════════════════════════════════ -->
@@ -230,9 +251,10 @@
   </div>
 
 </div>
+</main>
 
 <footer class="footer">
-  <p>NYC SmartFeed &mdash; A student initiative from <a href="https://www.york.cuny.edu" target="_blank">York College, CUNY</a></p>
+  <p>NYC SmartFeed &mdash; An initiative by students of <a href="https://www.york.cuny.edu" target="_blank" aria-label="York College, CUNY (opens in new tab)">York College, CUNY</a></p>
 </footer>
 
 </body>
