@@ -583,14 +583,18 @@ async function searchProduct() {
     const p    = data.products?.[0];
     if (!p) { toast('Product not found. Try a different name.'); return; }
     const n = p.nutriments;
-    _showNutrition({
+    const nutrition = {
       product:      p.product_name || query,
       calories:     Math.round(n['energy-kcal_serving'] || n['energy-kcal_100g'] || 0),
       protein_g:    Math.round(n.proteins_serving       || n.proteins_100g       || 0),
       carbs_g:      Math.round(n.carbohydrates_serving  || n.carbohydrates_100g  || 0),
       fat_g:        Math.round(n.fat_serving            || n.fat_100g            || 0),
       serving_size: p.serving_size || 'per serving'
-    });
+    };
+    _showNutrition(nutrition);
+    // Fetch swaps in background, then update
+    _fetchSwaps(nutrition.product, nutrition.calories, nutrition.protein_g, nutrition.carbs_g, nutrition.fat_g)
+      .then(swaps => { if (swaps.length) { nutrition.swaps = swaps; _showNutrition(nutrition); } });
   } catch { toast('Search failed. Please try again.'); }
 }
 
@@ -615,7 +619,47 @@ function _showNutrition(n) {
   el('nutr-summary').textContent =
     `This uses ${calPct}% of your ${targets.calories.toLocaleString()} daily calorie goal. ` +
     (dailyTargets ? 'Based on your personal profile.' : 'Log in to personalize this to your own stats.');
+
+  // Whole Food Swaps
+  const swapContainer = el('nutr-swaps');
+  if (n.swaps && n.swaps.length > 0) {
+    swapContainer.innerHTML = `
+      <div class="swap-header">
+        <h4>🥬 Whole Food Swaps</h4>
+        <p class="swap-disclaimer">Educational information, not dietary advice.</p>
+      </div>
+      <div class="swap-grid">${n.swaps.map(s => `
+        <div class="swap-card">
+          <div class="swap-name">${s.food}</div>
+          <div class="swap-macros">
+            <span>${s.calories} cal</span>
+            <span>${s.protein_g}g protein</span>
+            <span>${s.carbs_g}g carbs</span>
+            <span>${s.fat_g}g fat</span>
+          </div>
+          <div class="swap-why">${s.why}</div>
+        </div>`).join('')}
+      </div>`;
+    swapContainer.style.display = 'block';
+  } else {
+    swapContainer.style.display = 'none';
+  }
+
   el('nutr-result').style.display = 'block';
+}
+
+async function _fetchSwaps(product, calories, protein_g, carbs_g, fat_g) {
+  try {
+    const response = await fetch('/api/scan-label', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ swapOnly: true, product, calories, protein_g, carbs_g, fat_g })
+    });
+    const data = await response.json();
+    const text = data.content?.[0]?.text || '{}';
+    const result = JSON.parse(text.replace(/```json|```/g, '').trim());
+    return result.swaps || [];
+  } catch { return []; }
 }
 
 // ═══════════════════════════════════════════════════════
