@@ -205,9 +205,13 @@
   }
   /* ── Advisors grid ── */
   .advisors-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 16px;
+  }
+  .advisors-grid .advisor-card {
+    flex: 0 1 180px;
   }
   .advisor-card {
     background: var(--w);
@@ -398,7 +402,7 @@
     <h2 class="section-title">Faculty &amp; Advisors</h2>
     <div class="section-desc">Faculty at York College, CUNY who supported this project through technical leadership, content review, and advisory guidance.</div>
 
-    <div class="advisors-grid">
+    <div class="advisors-grid advisors-5">
       <div class="advisor-card">
         <div class="advisor-name">Dr. Erin Jacques</div>
         <div class="advisor-role">AI Development Lead</div>
@@ -414,6 +418,10 @@
       <div class="advisor-card">
         <div class="advisor-name">Dr. Nicholas Grosskopf</div>
         <div class="advisor-role">Public Health Faculty</div>
+      </div>
+      <div class="advisor-card">
+        <div class="advisor-name">Prof. Joseph Parrinello</div>
+        <div class="advisor-role">Health &amp; Nutrition Faculty</div>
       </div>
     </div>
   </section>
