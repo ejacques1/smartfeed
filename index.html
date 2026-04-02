@@ -4,9 +4,9 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SmartFeed — Know Your Food Zone</title>
-  <meta name="description" content="Find affordable, healthy food near you. Powered by USDA data and AI."/>
-  <meta property="og:title" content="SmartFeed — Eat well. No matter your zip code."/>
-  <meta property="og:description" content="Find affordable, healthy food near you. Powered by USDA data and AI."/>
+  <meta name="description" content="Know your food environment. SmartFeed uses USDA data to classify your area and gives you tools to make smarter food choices."/>
+  <meta property="og:title" content="SmartFeed — Know your food environment."/>
+  <meta property="og:description" content="See your food zone, find what's around you, and scan nutrition labels to make smarter choices. Powered by USDA data."/>
   <meta property="og:image" content="https://smartfeed.nyc/images/og-image.png"/>
   <meta property="og:url" content="https://smartfeed.nyc"/>
   <meta property="og:type" content="website"/>
@@ -47,8 +47,8 @@
   </nav>
   <div class="hero-body">
     <div class="badge">🌿 Powered by USDA Food Access Data</div>
-    <h1>Do you have <span>access</span><br>to healthy food?</h1>
-    <p class="hero-sub">SmartFeed uses your GPS and real USDA data to classify your food environment — then finds healthier options nearby.</p>
+    <h1>Know your <span>food</span><br>environment.</h1>
+    <p class="hero-sub">SmartFeed uses real USDA data to classify your area, shows what food sources are around you, and gives you the tools to make smarter choices.</p>
     <div class="cta-card">
       <div class="cta-label">🔍 Check Your Zone</div>
       <h2>Enter your address or use your current location</h2>
@@ -149,14 +149,14 @@
 
   <!-- Places Grid -->
   <div class="places-grid" id="places-grid">
-    <div class="places-empty">Searching nearby healthy spots…</div>
+    <div class="places-empty">Searching nearby food sources…</div>
   </div>
 
   <!-- Suggest Banner -->
   <div class="suggest-bar">
     <div>
-      <h4>Know a hidden healthy gem?</h4>
-      <p>Help your community — suggest a spot we're missing.</p>
+      <h4>Know a food spot we're missing?</h4>
+      <p>Help your community — suggest a place that should be listed.</p>
     </div>
     <button class="btn-suggest" onclick="openModal('modal-suggest')">+ Add a Place</button>
   </div>
@@ -216,12 +216,12 @@
 <!-- ═══ HOW IT WORKS ═══ -->
 <section class="section" id="how">
   <div class="section-label">The Process</div>
-  <h2>From one tap to<br>your next healthy meal</h2>
+  <h2>Four tools to take<br>control of your nutrition</h2>
   <div class="steps">
-    <div class="step-card"><div class="step-n">01</div><h4>Drop Your Location</h4><p>Enter an address or tap to share your GPS. No account needed.</p></div>
-    <div class="step-card"><div class="step-n">02</div><h4>We Classify Your Zone</h4><p>SmartFeed checks your area against USDA Food Access Research Atlas data in real time.</p></div>
-    <div class="step-card"><div class="step-n">03</div><h4>See What's Near You</h4><p>Get a ranked list of grocery stores, farmers markets, and healthy restaurants. Filter by diet and budget.</p></div>
-    <div class="step-card"><div class="step-n">04</div><h4>Scan & Eat Better</h4><p>Snap a nutrition label to see how it fits your daily goals. Save favorites and track over time.</p></div>
+    <div class="step-card"><div class="step-n">01</div><h4>Know Your Zone</h4><p>Enter your zip code to see if you're in a USDA-classified low-access food area. No account needed.</p></div>
+    <div class="step-card"><div class="step-n">02</div><h4>Know What's Around You</h4><p>See every grocery store, restaurant, and food source near you. Filter by type, diet, and budget.</p></div>
+    <div class="step-card"><div class="step-n">03</div><h4>Know Your Numbers</h4><p>Create a free profile to get personalized daily calorie and macronutrient targets based on your body.</p></div>
+    <div class="step-card"><div class="step-n">04</div><h4>Know Your Food</h4><p>Scan any nutrition label to see how a product fits into your daily goals.</p></div>
   </div>
 </section>
 
@@ -240,7 +240,7 @@
 <!-- ═══ FOOTER ═══ -->
 <footer>
   <div class="logo"><span class="ldot"></span>SmartFeed</div>
-  <div>Data: USDA Food Access Research Atlas · Built for public health 🌿</div>
+  <div>Data: USDA Food Access Research Atlas · Built by Public Health students 🌿</div>
   <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap"><a href="/terms" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem">Terms & Privacy</a><a href="/about" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem">About Us</a></div>
   <div>© 2026 SmartFeed</div>
 </footer>
@@ -267,7 +267,7 @@
 <div class="modal-bg" id="modal-signup" role="dialog" aria-modal="true" aria-labelledby="modal-signup-title">
   <div class="modal">
     <h3 id="modal-signup-title">Create your profile</h3>
-    <p class="modal-sub">Optional details help us personalize nutrition targets and find better options for you.</p>
+    <p class="modal-sub">Optional details help us calculate your personalized daily calorie and nutrition targets.</p>
     <div class="fg"><label for="su-email">Email *</label><input type="email" id="su-email" placeholder="you@email.com"/></div>
     <div class="fg"><label for="su-pw">Password *</label><input type="password" id="su-pw" placeholder="Min 6 characters"/></div>
     <div class="frow">
