@@ -127,6 +127,7 @@ h1 span{color:var(--gl)}
 .section{padding:80px 24px;max-width:960px;margin:0 auto}
 .section-label{font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--g);margin-bottom:12px}
 .section h2{font-family:"Syne",sans-serif;font-size:clamp(1.8rem,3.5vw,2.4rem);font-weight:800;margin-bottom:48px;line-height:1.15;letter-spacing:-.5px}
+.steps-lead{font-size:.95rem;color:#5a6e60;margin-bottom:8px;line-height:1.6}
 .steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
 .step-card{background:#fff;border:1.5px solid var(--b);border-radius:var(--rad);padding:28px}
 .step-n{font-family:"Syne",sans-serif;font-size:2rem;font-weight:800;color:var(--gxl);margin-bottom:14px}
