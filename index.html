@@ -54,7 +54,7 @@
       <h2>Enter your address or use your current location</h2>
       <div class="loc-row">
         <label for="address-input" class="sr-only">Enter your address</label>
-        <input class="loc-input" id="address-input" type="text" placeholder="123 Main St, Brooklyn, NY…"/>
+        <input class="loc-input" id="address-input" type="text" placeholder="Enter your zip code (e.g., 11451)"/>
         <button class="btn btn-green" id="detect-btn" onclick="detectZone()">
           <div class="spinner" id="btn-spinner"></div>
           <span id="btn-text">Detect</span>
@@ -120,46 +120,32 @@
     </div>
   </div>
 
-  <!-- Filter Bar -->
-  <div class="places-header">🥗 Healthy Options Nearby</div>
-  <div class="filter-bar" id="filter-bar">
-    <div class="filter-group">
-      <label for="filter-diet">🥬 Dietary Preference</label>
-      <select id="filter-diet" onchange="applyFilters()">
-        <option value="">All types</option>
-        <option value="vegetarian">Vegetarian</option>
-        <option value="vegan">Vegan</option>
-        <option value="gluten-free">Gluten-free</option>
-        <option value="halal">Halal</option>
-        <option value="kosher">Kosher</option>
-        <option value="organic">Organic</option>
-        <option value="low-carb">Low-carb / Keto</option>
-      </select>
+  <!-- Food Resources -->
+  <div class="resources-section" id="resources-section" style="display:none">
+    <h3>Food Resources Near You</h3>
+    <p class="resources-desc">Based on your zone classification, here are resources to help you find affordable, nutritious food.</p>
+    <div class="resources-grid">
+      <a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" class="resource-card">
+        <div class="resource-icon">🛒</div>
+        <div class="resource-name">SNAP Retailer Locator</div>
+        <div class="resource-desc">Find stores that accept SNAP/EBT benefits near you.</div>
+      </a>
+      <a href="https://www.feedingamerica.org/find-your-local-foodbank" target="_blank" class="resource-card">
+        <div class="resource-icon">🏪</div>
+        <div class="resource-name">Find a Food Bank</div>
+        <div class="resource-desc">Locate food banks and pantries in your community.</div>
+      </a>
+      <a href="https://www.fns.usda.gov/wic" target="_blank" class="resource-card">
+        <div class="resource-icon">🥛</div>
+        <div class="resource-name">WIC Program</div>
+        <div class="resource-desc">Nutrition assistance for women, infants, and children.</div>
+      </a>
+      <a href="https://www.nyc.gov/site/hra/help/snap-benefits-food-program.page" target="_blank" class="resource-card">
+        <div class="resource-icon">🗽</div>
+        <div class="resource-name">NYC Food Assistance</div>
+        <div class="resource-desc">SNAP benefits and food programs for NYC residents.</div>
+      </a>
     </div>
-    <div class="filter-group">
-      <label for="filter-budget">💰 Budget</label>
-      <select id="filter-budget" onchange="applyFilters()">
-        <option value="0">Any price</option>
-        <option value="1">$ — Inexpensive</option>
-        <option value="2">$$ — Moderate</option>
-        <option value="3">$$$ — Pricey</option>
-      </select>
-    </div>
-    <button class="btn-filter-reset" onclick="resetFilters()">Clear filters</button>
-  </div>
-
-  <!-- Places Grid -->
-  <div class="places-grid" id="places-grid">
-    <div class="places-empty">Searching nearby food sources…</div>
-  </div>
-
-  <!-- Suggest Banner -->
-  <div class="suggest-bar">
-    <div>
-      <h4>Know a food spot we're missing?</h4>
-      <p>Help your community — suggest a place that should be listed.</p>
-    </div>
-    <button class="btn-suggest" onclick="openModal('modal-suggest')">+ Add a Place</button>
   </div>
 </section>
 
@@ -339,25 +325,6 @@
     <div class="modal-actions">
       <button class="btn-secondary" onclick="closeModal('modal-goals')">Cancel</button>
       <button class="btn-primary" onclick="saveGoals()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- Suggest a Place -->
-<div class="modal-bg" id="modal-suggest" role="dialog" aria-modal="true" aria-labelledby="modal-suggest-title">
-  <div class="modal">
-    <h3 id="modal-suggest-title">Suggest a healthy spot</h3>
-    <p class="modal-sub">Know a place with great affordable food? Help your community find it.</p>
-    <div class="fg"><label for="sug-name">Place name *</label><input type="text" id="sug-name" placeholder="e.g. Maria's Fresh Market"/></div>
-    <div class="fg"><label for="sug-addr">Address</label><input type="text" id="sug-addr" placeholder="Full address"/></div>
-    <div class="fg"><label for="sug-type">Type</label>
-      <select id="sug-type"><option>Grocery / Supermarket</option><option>Farmers Market</option><option>Healthy Restaurant</option><option>Community Garden</option><option>Food Co-op</option><option>Other</option></select>
-    </div>
-    <div class="fg"><label for="sug-notes">Why is it great? (optional)</label><textarea id="sug-notes" placeholder="Affordable, fresh produce, accepts EBT…"></textarea></div>
-    <div class="err" id="sug-err" role="alert"></div>
-    <div class="modal-actions">
-      <button class="btn-secondary" onclick="closeModal('modal-suggest')">Cancel</button>
-      <button class="btn-primary" onclick="submitSuggestion()">Submit</button>
     </div>
   </div>
 </div>

@@ -5,9 +5,8 @@
 const SUPABASE_URL      = 'https://seyildptkabaukqkgahg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNleWlsZHB0a2FiYXVrcWtnYWhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MTUxMTEsImV4cCI6MjA4ODk5MTExMX0.UYZdZo7DS0WSQ_3yVR38lN8RUu8b-HOj6u7_prtlNKc';
 
-// These are loaded from Vercel env vars via /api/config
-let GOOGLE_MAPS_KEY = '';
-let USDA_API_KEY    = '';
+// Loaded from Vercel env vars via /api/config
+let USDA_API_KEY = '';
 
 let sb;
 try {
@@ -27,25 +26,14 @@ try {
     eq: function() { return this; }, single: _noop, order: function() { return this; } }), auth: _noopAuth };
 }
 
-let mapsReady = false;
-window._onMapsReady = () => { mapsReady = true; };
-
-// Load config from server, then init Google Maps
+// Load config from server
 (async function _initConfig() {
   try {
     const res = await fetch('/api/config');
     const cfg = await res.json();
-    GOOGLE_MAPS_KEY = cfg.googleMapsKey || '';
-    USDA_API_KEY    = cfg.usdaApiKey || '';
+    USDA_API_KEY = cfg.usdaApiKey || '';
   } catch (e) {
     console.warn('Could not load config, falling back to defaults');
-  }
-  // Load Google Maps after we have the key
-  if (GOOGLE_MAPS_KEY) {
-    const _gm = document.createElement('script');
-    _gm.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_KEY}&libraries=places,geometry&callback=_onMapsReady`;
-    _gm.async = true; _gm.defer = true;
-    document.head.appendChild(_gm);
   }
 })();
 
@@ -53,11 +41,6 @@ let currentUser   = null;
 let userProfile   = null;
 let userFavorites = [];
 let dailyTargets  = null;
-
-// Filter state
-let lastSearchLat = null;
-let lastSearchLng = null;
-let allPlaces     = [];
 
 // ═══════════════════════════════════════════════════════
 // AUTH STATE
@@ -265,7 +248,7 @@ async function _getUSDA(lat, lng) {
     const isLimited = !isLILA && (d.lapophalfshare > 0.33);
     return { isLILA, isLimited, verified: true, raw: d };
   } catch (e) {
-    console.warn('USDA unavailable, falling back to Places ratio:', e);
+    console.warn('USDA unavailable, falling back to default:', e);
     return null;
   }
 }
@@ -291,74 +274,8 @@ async function _classifyZone(lat, lng) {
     const zone = usda.isLILA ? 'lila' : usda.isLimited ? 'limited' : 'healthy';
     return { zone, source: 'usda' };
   }
-  return new Promise(resolve => {
-    const svc = new google.maps.places.PlacesService(document.createElement('div'));
-    const loc = new google.maps.LatLng(lat, lng);
-    let grocery = 0, fastfood = 0, done = 2;
-    const finish = () => {
-      if (--done > 0) return;
-      let zone = 'healthy';
-      if (grocery === 0) zone = 'lila';
-      else if ((fastfood / Math.max(grocery, 1)) >= 3) zone = 'limited';
-      resolve({ zone, source: 'google' });
-    };
-    svc.nearbySearch({ location: loc, radius: 1600, type: 'grocery_or_supermarket' },
-      (r, s) => { grocery = s === 'OK' ? r.length : 0; finish(); });
-    svc.nearbySearch({ location: loc, radius: 1600, keyword: 'fast food', type: 'restaurant' },
-      (r, s) => { fastfood = s === 'OK' ? Math.min(r.length, 20) : 0; finish(); });
-  });
-}
-
-function _fetchPlaces(lat, lng, dietaryKeyword) {
-  const HALF_MILE_M = 805;  // half mile in meters
-  const svc = new google.maps.places.PlacesService(document.createElement('div'));
-  const origin = new google.maps.LatLng(lat, lng);
-  const baseOpts = { location: origin, radius: HALF_MILE_M };
-
-  // Multiple searches to cast a wide net
-  const searches = [
-    { ...baseOpts, type: 'grocery_or_supermarket' },
-    { ...baseOpts, keyword: 'health food store' },
-    { ...baseOpts, keyword: 'farmers market' },
-    { ...baseOpts, keyword: 'organic food' },
-  ];
-  if (dietaryKeyword) {
-    searches.push({ ...baseOpts, keyword: dietaryKeyword });
-  }
-
-  return new Promise(resolve => {
-    const seen = new Map();
-    let pending = searches.length;
-    let resolved = false;
-
-    function finish() {
-      if (resolved) return;
-      resolved = true;
-      const combined = Array.from(seen.values())
-        .map(p => ({
-          ...p,
-          _distM: google.maps.geometry.spherical.computeDistanceBetween(origin, p.geometry.location)
-        }))
-        .filter(p => p._distM <= HALF_MILE_M)
-        .sort((a, b) => a._distM - b._distM)
-        .slice(0, 20);
-      resolve(combined);
-    }
-
-    function collect(results, status) {
-      if (status === 'OK' && results) {
-        results.forEach(p => {
-          if (!seen.has(p.place_id)) seen.set(p.place_id, p);
-        });
-      }
-      if (--pending === 0) finish();
-    }
-
-    // Safety timeout — resolve with whatever we have after 8 seconds
-    setTimeout(finish, 8000);
-
-    searches.forEach(opts => svc.nearbySearch(opts, collect));
-  });
+  // Fallback when USDA data is unavailable
+  return { zone: 'healthy', source: 'fallback' };
 }
 
 function _renderZone(zone, source) {
@@ -374,63 +291,15 @@ function _renderZone(zone, source) {
   sh.textContent = z.health.v; sh.className = 'score-num ' + z.health.c;
 }
 
-function _priceLevelLabel(level) {
-  if (level === undefined || level === null) return '';
-  const symbols = ['Free', '$', '$$', '$$$', '$$$$'];
-  return symbols[level] || '';
-}
-
-function _renderPlaces(places, lat, lng) {
-  const grid = el('places-grid');
-  grid.innerHTML = '';
-  if (!places.length) {
-    grid.innerHTML = '<div class="places-empty">No spots match your filters. Try adjusting your dietary or budget preferences. 👆</div>';
-    return;
-  }
-  const uLoc = new google.maps.LatLng(lat, lng);
-  places.forEach((p, i) => {
-    const distM = google.maps.geometry.spherical.computeDistanceBetween(uLoc, p.geometry.location);
-    const dist  = (distM * 0.000621371).toFixed(1);
-    const pLat  = p.geometry.location.lat();
-    const pLng  = p.geometry.location.lng();
-    const name  = p.name.replace(/'/g, "\\'");
-    const addr  = (p.vicinity || '').replace(/'/g, "\\'");
-    const type  = (p.types?.[0] || 'food spot').replace(/_/g, ' ');
-    const priceLabel = _priceLevelLabel(p.price_level);
-    const card  = document.createElement('div');
-    card.className = 'place-card';
-    card.style.animationDelay = (i * 0.07) + 's';
-    card.innerHTML = `
-      <div class="place-type">${type}</div>
-      <div class="place-name">${p.name}</div>
-      <div class="place-dist">📍 ${dist} mi away</div>
-      ${p.rating ? `<div class="place-rating">⭐ ${p.rating} (${p.user_ratings_total || 0})</div>` : ''}
-      <div class="place-tags">
-        ${p.opening_hours?.open_now ? '<span class="tag open">Open Now</span>' : ''}
-        ${priceLabel ? `<span class="tag price">${priceLabel}</span>` : ''}
-        <span class="tag">Healthy Option</span>
-      </div>
-      <button class="btn-dir" onclick="openDir(${pLat},${pLng})">Get Directions →</button>
-      <button class="btn-fav" onclick="saveFavorite('${name}','${addr}','${type}',${pLat},${pLng})">❤️ Save to Favorites</button>`;
-    grid.appendChild(card);
-  });
+function _renderResources(lat, lng, zone) {
+  const section = el('resources-section');
+  if (section) section.style.display = 'block';
 }
 
 async function _runSearch(lat, lng, address) {
-  lastSearchLat = lat;
-  lastSearchLng = lng;
-
   const { zone, source } = await _classifyZone(lat, lng);
   _renderZone(zone, source);
-
-  // Auto-set filters from user profile
-  _autoSetFilters();
-
-  const dietFilter = el('filter-diet')?.value || '';
-  const places = await _fetchPlaces(lat, lng, dietFilter);
-  allPlaces = places;
-
-  _applyBudgetFilter();
+  _renderResources(lat, lng, zone);
 
   await sb.from('searches').insert({ address, lat, lng, zone_result: zone, user_id: currentUser?.id || null });
   el('result-section').style.display = 'block';
@@ -438,80 +307,35 @@ async function _runSearch(lat, lng, address) {
 }
 
 // ═══════════════════════════════════════════════════════
-// DIETARY & BUDGET FILTERS
+// GEOCODING & ZONE DETECTION
 // ═══════════════════════════════════════════════════════
-function _autoSetFilters() {
-  if (!userProfile) return;
-  const dietEl = el('filter-diet');
-  const budgetEl = el('filter-budget');
-
-  // Map profile dietary preference to filter value
-  if (dietEl && userProfile.dietary_preference && userProfile.dietary_preference !== 'No preference') {
-    const pref = userProfile.dietary_preference.toLowerCase();
-    for (const opt of dietEl.options) {
-      if (opt.value === pref) { dietEl.value = pref; break; }
-    }
-  }
-
-  // Map weekly budget to max price_level
-  if (budgetEl && userProfile.weekly_budget) {
-    const budgetMap = { 'Under $25': '1', '$25–$50': '2', '$50–$100': '3', '$100+': '0' };
-    const mapped = budgetMap[userProfile.weekly_budget];
-    if (mapped) budgetEl.value = mapped;
-  }
-}
-
-function _applyBudgetFilter() {
-  const maxPrice = parseInt(el('filter-budget')?.value) || 0;
-  let filtered = allPlaces;
-
-  if (maxPrice > 0) {
-    filtered = allPlaces.filter(p =>
-      p.price_level === undefined || p.price_level === null || p.price_level <= maxPrice
-    );
-  }
-
-  _renderPlaces(filtered, lastSearchLat, lastSearchLng);
-}
-
-async function applyFilters() {
-  if (!lastSearchLat || !lastSearchLng) return;
-
-  const dietFilter = el('filter-diet')?.value || '';
-
-  // Dietary filter: re-fetch with new keyword to get relevant results
-  const grid = el('places-grid');
-  grid.innerHTML = '<div class="places-empty">Updating results…</div>';
-
-  const places = await _fetchPlaces(lastSearchLat, lastSearchLng, dietFilter);
-  allPlaces = places;
-
-  // Budget filter: client-side filter by price_level
-  _applyBudgetFilter();
-}
-
-function resetFilters() {
-  el('filter-diet').value = '';
-  el('filter-budget').value = '0';
-  applyFilters();
-}
-
 async function detectZone() {
-  if (!mapsReady) { toast('Maps still loading, try again in a second.'); return; }
   const addr = el('address-input').value.trim();
-  if (!addr) { toast('Please enter an address first.'); return; }
+  if (!addr) { toast('Please enter an address or zip code first.'); return; }
   _setLoading(true);
   try {
-    await new Promise((res, rej) => {
-      new google.maps.Geocoder().geocode({ address: addr }, (results, status) => {
-        if (status === 'OK' && results[0]) {
-          const loc = results[0].geometry.location;
-          _runSearch(loc.lat(), loc.lng(), addr).then(res);
-        } else rej(new Error('Not found'));
-      });
-    });
+    let lat, lng;
+    // Check if input looks like a zip code (5 digits)
+    if (/^\d{5}$/.test(addr)) {
+      const res = await fetch(`https://api.zippopotam.us/us/${addr}`);
+      if (!res.ok) throw new Error('Zip not found');
+      const data = await res.json();
+      const place = data.places?.[0];
+      if (!place) throw new Error('Zip not found');
+      lat = parseFloat(place.latitude);
+      lng = parseFloat(place.longitude);
+    } else {
+      // Full address — use Census geocoder
+      const res = await fetch(`https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=${encodeURIComponent(addr)}&benchmark=Public_AR_Current&format=json`);
+      const data = await res.json();
+      const match = data?.result?.addressMatches?.[0];
+      if (!match) throw new Error('Not found');
+      lat = match.coordinates.y;
+      lng = match.coordinates.x;
+    }
+    await _runSearch(lat, lng, addr);
   } catch {
-    toast('Address not found. Try a full address with city and state.');
+    toast('Address not found. Try a zip code or full address with city and state.');
   }
   _setLoading(false);
 }
@@ -526,10 +350,6 @@ function useGPS() {
     await _runSearch(lat, lng, `${lat},${lng}`);
     _setLoading(false);
   }, () => toast('Location denied. Please enter your address manually.'));
-}
-
-function openDir(lat, lng) {
-  window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -660,23 +480,6 @@ async function _fetchSwaps(product, calories, protein_g, carbs_g, fat_g) {
     const result = JSON.parse(text.replace(/```json|```/g, '').trim());
     return result.swaps || [];
   } catch { return []; }
-}
-
-// ═══════════════════════════════════════════════════════
-// COMMUNITY SUGGESTIONS
-// ═══════════════════════════════════════════════════════
-async function submitSuggestion() {
-  const name    = val('sug-name');
-  const address = val('sug-addr');
-  const type    = val('sug-type');
-  const notes   = val('sug-notes');
-  if (!name) { showErr('sug-err', 'Place name is required.'); return; }
-  const { error } = await sb.from('suggestions')
-    .insert({ name, address, type, notes, submitted_by: currentUser?.id || null });
-  if (error) { showErr('sug-err', error.message); return; }
-  closeModal('modal-suggest');
-  toast('Thanks! Suggestion submitted for review 🙌');
-  ['sug-name','sug-addr','sug-notes'].forEach(id => el(id).value = '');
 }
 
 // ═══════════════════════════════════════════════════════

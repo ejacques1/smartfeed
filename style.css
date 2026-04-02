@@ -163,6 +163,15 @@ footer{background:var(--ink);color:rgba(255,255,255,.4);border-top:1px solid rgb
 .swap-macros{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .swap-macros span{font-size:.72rem;background:var(--w);padding:2px 8px;border-radius:20px;color:var(--g);font-weight:600;border:1px solid var(--b)}
 .swap-why{font-size:.78rem;color:#5a6e60;line-height:1.5}
+.resources-section{margin-top:24px}
+.resources-section h3{font-family:"Syne",sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:6px}
+.resources-desc{font-size:.88rem;color:#5a6e60;margin-bottom:16px}
+.resources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.resource-card{background:#fff;border:1.5px solid var(--b);border-radius:var(--rad);padding:24px;text-decoration:none;color:var(--ink);transition:transform .2s,box-shadow .2s}
+.resource-card:hover{transform:translateY(-3px);box-shadow:var(--sh)}
+.resource-icon{font-size:2rem;margin-bottom:10px}
+.resource-name{font-family:"Syne",sans-serif;font-weight:700;font-size:.95rem;margin-bottom:6px}
+.resource-desc{font-size:.82rem;color:#5a6e60;line-height:1.5}
 @media(max-width:640px){.swap-grid{grid-template-columns:1fr}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
