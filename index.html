@@ -104,35 +104,36 @@
     </div>
   </div>
 
-  <!-- Food Resources -->
+  <!-- Farmers Markets Near You -->
+  <div class="markets-section" id="markets-section">
+    <h3>🥬 Farmers Markets Near You</h3>
+    <p class="markets-desc">Live data from NYC Open Data — these markets accept EBT.</p>
+    <div class="markets-loading" id="markets-loading" style="display:none">
+      <div class="spinner dark" style="display:inline-block;margin-right:8px"></div>
+      Finding markets near you…
+    </div>
+    <div class="markets-grid" id="markets-grid"></div>
+  </div>
+
+  <!-- Food Pantries & More Help -->
   <div class="resources-section" id="resources-section">
-    <h3>Find Food Help Near You</h3>
-    <p class="resources-desc">These free tools help you find affordable, nutritious food in your area — no login required.</p>
+    <h3>Need More Help?</h3>
+    <p class="resources-desc">Find food pantries, SNAP stores, and emergency food programs near you.</p>
     <div class="resources-grid">
-      <a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" aria-label="SNAP Retailer Locator (opens in new tab)" class="resource-card">
-        <div class="resource-icon">🛒</div>
-        <div class="resource-name">SNAP Retailer Locator</div>
-        <div class="resource-desc">Find stores that accept SNAP/EBT benefits near you. Official USDA tool.</div>
-      </a>
-      <a href="https://foodfinder.us/" target="_blank" aria-label="FoodFinder (opens in new tab)" class="resource-card">
+      <a id="link-foodhelp" href="https://finder.nyc.gov/foodhelp/" target="_blank" aria-label="Food Help NYC (opens in new tab)" class="resource-card">
         <div class="resource-icon">🍎</div>
-        <div class="resource-name">FoodFinder</div>
-        <div class="resource-desc">Find free food pantries, food banks, and meal programs near your zip code.</div>
+        <div class="resource-name">Food Pantries &amp; Soup Kitchens</div>
+        <div class="resource-desc">Find free food near you — pantries, soup kitchens, and mobile pantries across NYC.</div>
       </a>
-      <a href="https://www.feedingamerica.org/find-your-local-foodbank" target="_blank" aria-label="Feeding America (opens in new tab)" class="resource-card">
+      <a id="link-snap" href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" aria-label="SNAP Retailer Locator (opens in new tab)" class="resource-card">
+        <div class="resource-icon">🛒</div>
+        <div class="resource-name">SNAP / EBT Store Finder</div>
+        <div class="resource-desc">Find stores that accept SNAP/EBT benefits. Official USDA tool.</div>
+      </a>
+      <a id="link-foodbank" href="https://www.foodbanknyc.org/get-help/" target="_blank" aria-label="Food Bank for NYC (opens in new tab)" class="resource-card">
         <div class="resource-icon">🏪</div>
-        <div class="resource-name">Feeding America</div>
-        <div class="resource-desc">Locate your nearest food bank and community food distributions.</div>
-      </a>
-      <a href="https://www.fns.usda.gov/wic" target="_blank" aria-label="WIC Program (opens in new tab)" class="resource-card">
-        <div class="resource-icon">🥛</div>
-        <div class="resource-name">WIC Program</div>
-        <div class="resource-desc">Nutrition assistance for women, infants, and children.</div>
-      </a>
-      <a href="https://www.nyc.gov/site/hra/help/snap-benefits-food-program.page" target="_blank" aria-label="NYC Food Assistance (opens in new tab)" class="resource-card">
-        <div class="resource-icon">🗽</div>
-        <div class="resource-name">NYC Food Assistance</div>
-        <div class="resource-desc">SNAP benefits, food programs, and emergency food for NYC residents.</div>
+        <div class="resource-name">Food Bank for NYC</div>
+        <div class="resource-desc">Search for soup kitchens, food pantries, and SNAP enrollment sites near you.</div>
       </a>
     </div>
   </div>

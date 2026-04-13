@@ -214,11 +214,68 @@ function _renderFavorites() {
 // ═══════════════════════════════════════════════════════
 // SEARCH & RESOURCES
 // ═══════════════════════════════════════════════════════
+function _distMiles(lat1, lng1, lat2, lng2) {
+  const R = 3958.8; // Earth radius in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+async function _fetchMarkets(lat, lng) {
+  const grid = el('markets-grid');
+  const loading = el('markets-loading');
+  grid.innerHTML = '';
+  loading.style.display = 'flex';
+
+  try {
+    const res = await fetch('https://data.cityofnewyork.us/resource/8vwk-6iz2.json?$limit=1000');
+    const markets = await res.json();
+
+    // Calculate distance and sort by nearest
+    const nearby = markets
+      .filter(m => m.latitude && m.longitude)
+      .map(m => ({
+        ...m,
+        dist: _distMiles(lat, lng, parseFloat(m.latitude), parseFloat(m.longitude))
+      }))
+      .filter(m => m.dist <= 5) // within 5 miles
+      .sort((a, b) => a.dist - b.dist)
+      .slice(0, 12);
+
+    loading.style.display = 'none';
+
+    if (!nearby.length) {
+      grid.innerHTML = '<p class="markets-empty">No farmers markets found within 5 miles. Try the resources below for more food options.</p>';
+      return;
+    }
+
+    grid.innerHTML = nearby.map((m, i) => `
+      <div class="market-card" style="animation-delay:${i * 0.05}s">
+        <div class="market-name">${m.marketname}</div>
+        <div class="market-addr">📍 ${m.streetaddress} — ${m.dist.toFixed(1)} mi</div>
+        <div class="market-hours">🕐 ${m.daysoperation} ${m.hoursoperations || ''}</div>
+        <div class="market-tags">
+          ${m.accepts_ebt === 'Yes' ? '<span class="mtag ebt">Accepts EBT</span>' : ''}
+          ${m.open_year_round === 'Yes' ? '<span class="mtag year">Year-Round</span>' : '<span class="mtag seasonal">Seasonal</span>'}
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    loading.style.display = 'none';
+    grid.innerHTML = '<p class="markets-empty">Could not load farmers markets. Try the resources below.</p>';
+  }
+}
+
 async function _runSearch(lat, lng, address) {
-  // Show results immediately — don't wait for database logging
+  // Show results immediately
   el('result-section').style.display = 'block';
   el('result-section').scrollIntoView({ behavior: 'smooth' });
-  // Log search in background (non-blocking)
+
+  // Fetch farmers markets (non-blocking UI)
+  _fetchMarkets(lat, lng);
+
+  // Log search in background
   sb.from('searches').insert({ address, lat, lng, user_id: currentUser?.id || null }).then(() => {}).catch(() => {});
 }
 

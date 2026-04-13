@@ -163,7 +163,23 @@ footer{background:var(--ink);color:rgba(255,255,255,.4);border-top:1px solid rgb
 .swap-macros{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .swap-macros span{font-size:.72rem;background:var(--w);padding:2px 8px;border-radius:20px;color:var(--g);font-weight:600;border:1px solid var(--b)}
 .swap-why{font-size:.78rem;color:#5a6e60;line-height:1.5}
-.resources-section{margin-top:24px}
+.markets-section{margin-top:32px}
+.markets-section h3{font-family:"Syne",sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:6px}
+.markets-desc{font-size:.85rem;color:#5a6e60;margin-bottom:16px}
+.markets-loading{display:flex;align-items:center;color:#5a6e60;font-size:.9rem;padding:16px 0}
+.markets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.markets-empty{color:#5a6e60;font-size:.88rem;padding:12px 0}
+.market-card{background:#fff;border:1.5px solid var(--b);border-radius:var(--rad);padding:20px;animation:fadeUp .4s ease both;transition:transform .2s,box-shadow .2s}
+.market-card:hover{transform:translateY(-3px);box-shadow:var(--sh)}
+.market-name{font-family:"Syne",sans-serif;font-weight:700;font-size:.95rem;color:var(--ink);margin-bottom:8px}
+.market-addr{font-size:.82rem;color:#5a6e60;margin-bottom:4px}
+.market-hours{font-size:.82rem;color:#5a6e60;margin-bottom:10px}
+.market-tags{display:flex;gap:6px;flex-wrap:wrap}
+.mtag{font-size:.7rem;font-weight:600;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px}
+.mtag.ebt{background:var(--gxl);color:var(--g);border:1px solid var(--b)}
+.mtag.year{background:#e8f0fe;color:#1a73e8;border:1px solid #c4dafc}
+.mtag.seasonal{background:var(--al);color:#b07800;border:1px solid #f5d88a}
+.resources-section{margin-top:32px}
 .resources-section h3{font-family:"Syne",sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:6px}
 .resources-desc{font-size:.88rem;color:#5a6e60;margin-bottom:16px}
 .resources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
