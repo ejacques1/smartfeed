@@ -215,9 +215,11 @@ function _renderFavorites() {
 // SEARCH & RESOURCES
 // ═══════════════════════════════════════════════════════
 async function _runSearch(lat, lng, address) {
-  await sb.from('searches').insert({ address, lat, lng, user_id: currentUser?.id || null });
+  // Show results immediately — don't wait for database logging
   el('result-section').style.display = 'block';
   el('result-section').scrollIntoView({ behavior: 'smooth' });
+  // Log search in background (non-blocking)
+  sb.from('searches').insert({ address, lat, lng, user_id: currentUser?.id || null }).then(() => {}).catch(() => {});
 }
 
 // ═══════════════════════════════════════════════════════
