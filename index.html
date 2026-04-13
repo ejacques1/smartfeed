@@ -69,22 +69,6 @@
 <main id="main-content">
 <!-- ═══ RESULTS ═══ -->
 <section id="result-section">
-  <!-- Zone Banner -->
-  <div id="zone-banner" class="zone-banner healthy">
-    <div class="zone-emoji" id="zone-emoji">🌿</div>
-    <div class="zone-text">
-      <h3 id="zone-title">Zone Detected</h3>
-      <p id="zone-desc"></p>
-      <div class="usda-verified" id="usda-verified" style="display:none">✅ USDA Verified</div>
-    </div>
-  </div>
-
-  <!-- Score Cards -->
-  <div class="score-row">
-    <div class="score-card"><div class="score-num" id="score-access">—</div><div class="score-lbl">Supermarket Access</div></div>
-    <div class="score-card"><div class="score-num" id="score-ff">—</div><div class="score-lbl">Fast Food Density</div></div>
-    <div class="score-card"><div class="score-num" id="score-health">—</div><div class="score-lbl">Health Score</div></div>
-  </div>
 
   <!-- Nutrition Scanner -->
   <div class="scanner-card">
@@ -121,29 +105,34 @@
   </div>
 
   <!-- Food Resources -->
-  <div class="resources-section" id="resources-section" style="display:none">
-    <h3>Food Resources Near You</h3>
-    <p class="resources-desc">Based on your zone classification, here are resources to help you find affordable, nutritious food.</p>
+  <div class="resources-section" id="resources-section">
+    <h3>Find Food Help Near You</h3>
+    <p class="resources-desc">These free tools help you find affordable, nutritious food in your area — no login required.</p>
     <div class="resources-grid">
-      <a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" class="resource-card">
+      <a href="https://www.fns.usda.gov/snap/retailer-locator" target="_blank" aria-label="SNAP Retailer Locator (opens in new tab)" class="resource-card">
         <div class="resource-icon">🛒</div>
         <div class="resource-name">SNAP Retailer Locator</div>
-        <div class="resource-desc">Find stores that accept SNAP/EBT benefits near you.</div>
+        <div class="resource-desc">Find stores that accept SNAP/EBT benefits near you. Official USDA tool.</div>
       </a>
-      <a href="https://www.feedingamerica.org/find-your-local-foodbank" target="_blank" class="resource-card">
+      <a href="https://foodfinder.us/" target="_blank" aria-label="FoodFinder (opens in new tab)" class="resource-card">
+        <div class="resource-icon">🍎</div>
+        <div class="resource-name">FoodFinder</div>
+        <div class="resource-desc">Find free food pantries, food banks, and meal programs near your zip code.</div>
+      </a>
+      <a href="https://www.feedingamerica.org/find-your-local-foodbank" target="_blank" aria-label="Feeding America (opens in new tab)" class="resource-card">
         <div class="resource-icon">🏪</div>
-        <div class="resource-name">Find a Food Bank</div>
-        <div class="resource-desc">Locate food banks and pantries in your community.</div>
+        <div class="resource-name">Feeding America</div>
+        <div class="resource-desc">Locate your nearest food bank and community food distributions.</div>
       </a>
-      <a href="https://www.fns.usda.gov/wic" target="_blank" class="resource-card">
+      <a href="https://www.fns.usda.gov/wic" target="_blank" aria-label="WIC Program (opens in new tab)" class="resource-card">
         <div class="resource-icon">🥛</div>
         <div class="resource-name">WIC Program</div>
         <div class="resource-desc">Nutrition assistance for women, infants, and children.</div>
       </a>
-      <a href="https://www.nyc.gov/site/hra/help/snap-benefits-food-program.page" target="_blank" class="resource-card">
+      <a href="https://www.nyc.gov/site/hra/help/snap-benefits-food-program.page" target="_blank" aria-label="NYC Food Assistance (opens in new tab)" class="resource-card">
         <div class="resource-icon">🗽</div>
         <div class="resource-name">NYC Food Assistance</div>
-        <div class="resource-desc">SNAP benefits and food programs for NYC residents.</div>
+        <div class="resource-desc">SNAP benefits, food programs, and emergency food for NYC residents.</div>
       </a>
     </div>
   </div>

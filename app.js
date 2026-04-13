@@ -5,9 +5,6 @@
 const SUPABASE_URL      = 'https://seyildptkabaukqkgahg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNleWlsZHB0a2FiYXVrcWtnYWhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MTUxMTEsImV4cCI6MjA4ODk5MTExMX0.UYZdZo7DS0WSQ_3yVR38lN8RUu8b-HOj6u7_prtlNKc';
 
-// Loaded from Vercel env vars via /api/config
-let USDA_API_KEY = '';
-
 let sb;
 try {
   const { createClient } = supabase;
@@ -25,17 +22,6 @@ try {
   sb = { from: () => ({ select: _noop, insert: _noop, upsert: _noop, update: _noop, delete: _noop,
     eq: function() { return this; }, single: _noop, order: function() { return this; } }), auth: _noopAuth };
 }
-
-// Load config from server
-(async function _initConfig() {
-  try {
-    const res = await fetch('/api/config');
-    const cfg = await res.json();
-    USDA_API_KEY = cfg.usdaApiKey || '';
-  } catch (e) {
-    console.warn('Could not load config, falling back to defaults');
-  }
-})();
 
 let currentUser   = null;
 let userProfile   = null;
@@ -226,82 +212,10 @@ function _renderFavorites() {
 }
 
 // ═══════════════════════════════════════════════════════
-// USDA FOOD ACCESS RESEARCH ATLAS
+// SEARCH & RESOURCES
 // ═══════════════════════════════════════════════════════
-async function _getUSDA(lat, lng) {
-  try {
-    const cRes = await fetch(
-      `https://geocoding.geo.census.gov/geocoder/geographies/coordinates?x=${lng}&y=${lat}&benchmark=Public_AR_Current&vintage=Current_Current&format=json`
-    );
-    const cData = await cRes.json();
-    const tract = cData?.result?.geographies?.['Census Tracts']?.[0];
-    if (!tract) return null;
-
-    const uRes = await fetch(
-      `https://api.ers.usda.gov/data/foodaccess/foodaccessresearchatlas/2019?key=${USDA_API_KEY}&state=${tract.STATE}&county=${tract.COUNTY}&tract=${tract.TRACT}`
-    );
-    const uData = await uRes.json();
-    const d = uData?.data?.[0];
-    if (!d) return null;
-
-    const isLILA    = d.LILATracts_1And10 === 1 || d.LILATracts_halfAnd10 === 1;
-    const isLimited = !isLILA && (d.lapophalfshare > 0.33);
-    return { isLILA, isLimited, verified: true, raw: d };
-  } catch (e) {
-    console.warn('USDA unavailable, falling back to default:', e);
-    return null;
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-// ZONE CLASSIFICATION
-// ═══════════════════════════════════════════════════════
-const ZONE_DATA = {
-  lila:    { cls:'lila',    emoji:'⚠️', title:'Low-Income & Low-Access Area',
-    desc:'Your census tract is classified as a USDA Low-Income and Low-Access (LILA) area. Residents here have limited access to supermarkets and affordable healthy food.',
-    access:{v:'Low',c:'bad'}, ff:{v:'High',c:'bad'}, health:{v:'3/10',c:'bad'} },
-  limited: { cls:'limited', emoji:'🟡', title:'Limited Food Access Area',
-    desc:'Your area has a high share of residents who live far from supermarkets and healthy food sources, making nutritious choices harder.',
-    access:{v:'Med',c:'warn'}, ff:{v:'Very High',c:'bad'}, health:{v:'5/10',c:'warn'} },
-  healthy: { cls:'healthy', emoji:'🌿', title:'Adequate Food Access',
-    desc:'Your area has reasonable access to grocery stores and healthy food options relative to fast food density. Nice!',
-    access:{v:'Good',c:''}, ff:{v:'Low',c:''}, health:{v:'8/10',c:''} }
-};
-
-async function _classifyZone(lat, lng) {
-  const usda = await _getUSDA(lat, lng);
-  if (usda?.verified) {
-    const zone = usda.isLILA ? 'lila' : usda.isLimited ? 'limited' : 'healthy';
-    return { zone, source: 'usda' };
-  }
-  // Fallback when USDA data is unavailable
-  return { zone: 'healthy', source: 'fallback' };
-}
-
-function _renderZone(zone, source) {
-  const z = ZONE_DATA[zone];
-  el('zone-banner').className = 'zone-banner ' + z.cls;
-  el('zone-emoji').textContent = z.emoji;
-  el('zone-title').textContent = z.title;
-  el('zone-desc').textContent  = z.desc;
-  el('usda-verified').style.display = source === 'usda' ? 'inline-flex' : 'none';
-  const sa = el('score-access'), sf = el('score-ff'), sh = el('score-health');
-  sa.textContent = z.access.v; sa.className = 'score-num ' + z.access.c;
-  sf.textContent = z.ff.v;     sf.className = 'score-num ' + z.ff.c;
-  sh.textContent = z.health.v; sh.className = 'score-num ' + z.health.c;
-}
-
-function _renderResources(lat, lng, zone) {
-  const section = el('resources-section');
-  if (section) section.style.display = 'block';
-}
-
 async function _runSearch(lat, lng, address) {
-  const { zone, source } = await _classifyZone(lat, lng);
-  _renderZone(zone, source);
-  _renderResources(lat, lng, zone);
-
-  await sb.from('searches').insert({ address, lat, lng, zone_result: zone, user_id: currentUser?.id || null });
+  await sb.from('searches').insert({ address, lat, lng, user_id: currentUser?.id || null });
   el('result-section').style.display = 'block';
   el('result-section').scrollIntoView({ behavior: 'smooth' });
 }
