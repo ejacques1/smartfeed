@@ -100,6 +100,7 @@
       <h4 id="nutr-name"></h4>
       <div class="mbars" id="nutr-bars"></div>
       <p id="nutr-summary" style="margin-top:14px;font-size:.85rem;color:#6a8070"></p>
+      <button class="btn btn-green" id="nutr-log-btn" style="display:none;width:100%;margin-top:12px">+ Add to today's log</button>
       <div id="nutr-swaps" style="display:none"></div>
     </div>
   </div>
@@ -145,6 +146,30 @@
     <h2>Your Profile</h2>
     <button class="btn btn-green" onclick="showHome()">← Back</button>
   </div>
+
+  <!-- 7-Day Challenge -->
+  <div class="pcard challenge-card" style="margin-bottom:24px">
+    <div class="challenge-header">
+      <div>
+        <h4>🏆 7-Day Challenge</h4>
+        <p class="challenge-sub" id="challenge-sub">Log what you eat for 7 days to learn your eating patterns.</p>
+      </div>
+      <div class="challenge-count"><span id="challenge-days">0</span><span class="challenge-total">/7</span></div>
+    </div>
+    <div class="challenge-dots" id="challenge-dots"></div>
+    <div id="week-review" style="display:none"></div>
+  </div>
+
+  <!-- Today's Log -->
+  <div class="pcard" style="margin-bottom:24px">
+    <h4>📝 Today's Log</h4>
+    <p class="today-sub">Scan a label or search a product and tap <strong>Add to today</strong> to log it.</p>
+    <div id="today-bars"></div>
+    <div class="today-items" id="today-items">
+      <div class="empty-state">Nothing logged yet today. Head to the home page to scan a food label!</div>
+    </div>
+  </div>
+
   <div class="pgrid">
     <!-- Daily Targets -->
     <div class="pcard">
@@ -199,7 +224,7 @@
     <div class="step-card"><div class="step-n">01</div><h4>Check Your Area</h4><p>Enter your zip code to see if you're in a USDA-classified low-access food zone and find every food source nearby.</p></div>
     <div class="step-card"><div class="step-n">02</div><h4>Scan What You Eat</h4><p>Take a photo of any nutrition label to see the full calorie and macronutrient breakdown.</p></div>
     <div class="step-card"><div class="step-n">03</div><h4>Discover Better Options</h4><p>Get whole food swap suggestions for anything you scan — real foods, not processed substitutes.</p></div>
-    <div class="step-card"><div class="step-n">04</div><h4>Track Your Balance</h4><p>Create a free profile to see personalized daily targets and how your meals stack up.</p></div>
+    <div class="step-card"><div class="step-n">04</div><h4>Take the 7-Day Challenge</h4><p>Sign up free and log your meals for 7 days to learn your eating patterns — then you're done. No endless tracking.</p></div>
   </div>
 </section>
 

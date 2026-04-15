@@ -163,6 +163,36 @@ footer{background:var(--ink);color:rgba(255,255,255,.4);border-top:1px solid rgb
 .swap-macros{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .swap-macros span{font-size:.72rem;background:var(--w);padding:2px 8px;border-radius:20px;color:var(--g);font-weight:600;border:1px solid var(--b)}
 .swap-why{font-size:.78rem;color:#5a6e60;line-height:1.5}
+/* ── 7-Day Challenge ── */
+.challenge-card{background:linear-gradient(135deg,var(--gxl) 0%,#fff 100%);border:1.5px solid var(--b)}
+.challenge-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
+.challenge-sub{font-size:.85rem;color:#5a6e60;margin-top:4px;max-width:420px}
+.challenge-count{font-family:"Syne",sans-serif;font-weight:800;font-size:2rem;color:var(--g);line-height:1;white-space:nowrap}
+.challenge-total{font-size:1.2rem;color:#9ab2a2;font-weight:600}
+.challenge-dots{display:flex;gap:8px;margin-top:8px}
+.challenge-dot{flex:1;aspect-ratio:1;max-width:44px;border-radius:50%;background:#fff;border:2px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#9ab2a2;transition:all .2s}
+.challenge-dot.filled{background:var(--g);border-color:var(--g);color:#fff}
+.dot-label{font-family:"Syne",sans-serif}
+/* ── Today's Log ── */
+.today-sub{font-size:.82rem;color:#5a6e60;margin:6px 0 14px}
+.today-items{margin-top:12px}
+.log-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--b);border-radius:10px;margin-bottom:6px}
+.log-item-name{flex:1;font-weight:600;font-size:.88rem}
+.log-item-macros{font-size:.75rem;color:#5a6e60;white-space:nowrap}
+.log-item-del{background:none;border:none;color:#9ab2a2;font-size:1rem;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .15s}
+.log-item-del:hover{background:var(--rl);color:var(--r)}
+/* ── Week in Review ── */
+.review-box{background:#fff;border:2px solid var(--g);border-radius:14px;padding:20px;margin-top:16px}
+.review-box h5{font-family:"Syne",sans-serif;font-size:1rem;font-weight:800;color:var(--g);margin-bottom:10px}
+.review-stat{font-size:.92rem;line-height:1.6;color:var(--ink);margin-bottom:16px}
+.review-macros{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px}
+.review-macro{background:var(--gxl);border-radius:10px;padding:12px;text-align:center}
+.review-pct{font-family:"Syne",sans-serif;font-weight:800;font-size:1.5rem;line-height:1}
+.review-pct.p{color:#2563eb}
+.review-pct.c{color:#ea7f0a}
+.review-pct.f{color:#d946ef}
+.review-lbl{font-size:.72rem;color:#5a6e60;text-transform:uppercase;letter-spacing:.5px;margin-top:4px;font-weight:600}
+.review-note{font-size:.78rem;color:#5a6e60;line-height:1.5;font-style:italic}
 .markets-section{margin-top:32px}
 .markets-section h3{font-family:"Syne",sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:6px}
 .markets-desc{font-size:.85rem;color:#5a6e60;margin-bottom:16px}

@@ -65,6 +65,8 @@ function showProfile() {
   el('profile-section').style.display = 'block';
   _renderTargets();
   _renderFavorites();
+  loadTodayLog();
+  loadChallengeProgress();
   if (userProfile) {
     el('pref-diet').value   = userProfile.dietary_preference || 'No preference';
     el('pref-budget').value = userProfile.weekly_budget || 'Under $25';
@@ -485,7 +487,196 @@ function _showNutrition(n) {
     swapContainer.style.display = 'none';
   }
 
+  // "Add to today's log" button (only for logged-in users)
+  const logBtn = el('nutr-log-btn');
+  if (logBtn) {
+    if (currentUser) {
+      logBtn.style.display = 'block';
+      logBtn.onclick = () => logFood(n);
+    } else {
+      logBtn.style.display = 'none';
+    }
+  }
+
   el('nutr-result').style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════════════
+// 7-DAY CHALLENGE & FOOD LOG
+// ═══════════════════════════════════════════════════════
+async function logFood(n) {
+  if (!currentUser) { toast('Please log in to save your food log.'); return; }
+  const entry = {
+    user_id: currentUser.id,
+    product: n.product || 'Unknown',
+    calories: n.calories || 0,
+    protein_g: n.protein_g || 0,
+    carbs_g: n.carbs_g || 0,
+    fat_g: n.fat_g || 0,
+    serving_size: n.serving_size || 'per serving'
+  };
+  const { error } = await sb.from('food_log').insert(entry);
+  if (error) { toast('Could not save to log. Try again.'); return; }
+  toast('✅ Added to today\'s log!');
+}
+
+async function loadTodayLog() {
+  if (!currentUser) return;
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const { data: entries } = await sb.from('food_log')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .gte('logged_at', startOfDay.toISOString())
+    .order('logged_at', { ascending: false });
+
+  _renderTodayLog(entries || []);
+}
+
+function _renderTodayLog(entries) {
+  const targets = dailyTargets || { calories: 2000, protein: 125, carbs: 250, fat: 55 };
+  const totals = entries.reduce((acc, e) => ({
+    calories: acc.calories + (e.calories || 0),
+    protein:  acc.protein  + (e.protein_g || 0),
+    carbs:    acc.carbs    + (e.carbs_g || 0),
+    fat:      acc.fat      + (e.fat_g || 0)
+  }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
+
+  const macros = [
+    { label: 'Calories', val: totals.calories, target: targets.calories, unit: 'kcal', cls: 'cal' },
+    { label: 'Protein',  val: totals.protein,  target: targets.protein,  unit: 'g',    cls: 'pro' },
+    { label: 'Carbs',    val: totals.carbs,    target: targets.carbs,    unit: 'g',    cls: 'car' },
+    { label: 'Fat',      val: totals.fat,      target: targets.fat,      unit: 'g',    cls: 'fat' }
+  ];
+
+  el('today-bars').innerHTML = entries.length ? macros.map(m => {
+    const pct = Math.min(Math.round((m.val / m.target) * 100), 100);
+    return `<div class="mrow">
+      <div class="mlabel">${m.label}</div>
+      <div class="mtrack"><div class="mbar ${m.cls}" style="width:${pct}%"></div></div>
+      <div class="mnums">${m.val}${m.unit} / ${m.target}${m.unit} <span style="color:#bbb">(${pct}%)</span></div>
+    </div>`;
+  }).join('') : '';
+
+  const list = el('today-items');
+  if (!entries.length) {
+    list.innerHTML = '<div class="empty-state">Nothing logged yet today. Head to the home page to scan a food label!</div>';
+    return;
+  }
+  list.innerHTML = entries.map(e => `
+    <div class="log-item">
+      <div class="log-item-name">${e.product}</div>
+      <div class="log-item-macros">${e.calories} cal · ${e.protein_g}g P · ${e.carbs_g}g C · ${e.fat_g}g F</div>
+      <button class="log-item-del" onclick="deleteLogEntry('${e.id}')" aria-label="Remove entry">✕</button>
+    </div>`).join('');
+}
+
+async function deleteLogEntry(id) {
+  const { error } = await sb.from('food_log').delete().eq('id', id);
+  if (error) { toast('Could not delete entry.'); return; }
+  loadTodayLog();
+  loadChallengeProgress();
+}
+
+async function loadChallengeProgress() {
+  if (!currentUser) return;
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+
+  const { data: entries } = await sb.from('food_log')
+    .select('logged_at, calories, protein_g, carbs_g, fat_g')
+    .eq('user_id', currentUser.id)
+    .gte('logged_at', sevenDaysAgo.toISOString());
+
+  if (!entries) return;
+
+  // Get unique days logged (in user's local timezone)
+  const daysLogged = new Set();
+  const dailyTotals = {};
+  entries.forEach(e => {
+    const d = new Date(e.logged_at);
+    const dayKey = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    daysLogged.add(dayKey);
+    if (!dailyTotals[dayKey]) dailyTotals[dayKey] = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+    dailyTotals[dayKey].calories += e.calories || 0;
+    dailyTotals[dayKey].protein  += e.protein_g || 0;
+    dailyTotals[dayKey].carbs    += e.carbs_g || 0;
+    dailyTotals[dayKey].fat      += e.fat_g || 0;
+  });
+
+  const dayCount = daysLogged.size;
+  el('challenge-days').textContent = Math.min(dayCount, 7);
+
+  // Render dots for each day of the last 7 days
+  const dots = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    const filled = daysLogged.has(key);
+    const dayLabel = d.toLocaleDateString('en-US', { weekday: 'short' });
+    dots.push(`<div class="challenge-dot ${filled ? 'filled' : ''}" title="${d.toLocaleDateString()}"><div class="dot-label">${dayLabel[0]}</div></div>`);
+  }
+  el('challenge-dots').innerHTML = dots.join('');
+
+  // Update subtitle based on progress
+  const sub = el('challenge-sub');
+  if (dayCount === 0) sub.textContent = 'Log what you eat for 7 days to learn your eating patterns.';
+  else if (dayCount < 7) sub.textContent = `Keep going! ${7 - dayCount} more day${7 - dayCount === 1 ? '' : 's'} to complete the challenge.`;
+  else sub.textContent = '🎉 Challenge complete! Here\'s what you learned:';
+
+  // Show week in review once 7 days are logged
+  if (dayCount >= 7) _renderWeekInReview(dailyTotals);
+  else el('week-review').style.display = 'none';
+}
+
+function _renderWeekInReview(dailyTotals) {
+  const days = Object.values(dailyTotals);
+  const avg = days.reduce((acc, d) => ({
+    calories: acc.calories + d.calories / days.length,
+    protein:  acc.protein  + d.protein  / days.length,
+    carbs:    acc.carbs    + d.carbs    / days.length,
+    fat:      acc.fat      + d.fat      / days.length
+  }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
+
+  const targets = dailyTargets || { calories: 2000, protein: 125, carbs: 250, fat: 55 };
+  const calDiff = avg.calories - targets.calories;
+
+  // Macro percentages of total calories (protein 4cal/g, carbs 4cal/g, fat 9cal/g)
+  const pCal = avg.protein * 4;
+  const cCal = avg.carbs * 4;
+  const fCal = avg.fat * 9;
+  const totalCal = pCal + cCal + fCal || 1;
+  const pPct = Math.round(pCal / totalCal * 100);
+  const cPct = Math.round(cCal / totalCal * 100);
+  const fPct = Math.round(fCal / totalCal * 100);
+
+  // Plain-English takeaway
+  let takeaway;
+  if (Math.abs(calDiff) < 100) {
+    takeaway = `You averaged ${Math.round(avg.calories)} cal/day — right in line with your target of ${targets.calories}. Nice balance!`;
+  } else if (calDiff > 0) {
+    const daysPerPound = Math.round(3500 / calDiff);
+    takeaway = `You averaged ${Math.round(avg.calories)} cal/day — ${Math.round(calDiff)} above your target. At this rate, you'd gain about 1 lb every ${daysPerPound} days.`;
+  } else {
+    const daysPerPound = Math.round(3500 / Math.abs(calDiff));
+    takeaway = `You averaged ${Math.round(avg.calories)} cal/day — ${Math.round(Math.abs(calDiff))} below your target. At this rate, you'd lose about 1 lb every ${daysPerPound} days.`;
+  }
+
+  el('week-review').innerHTML = `
+    <div class="review-box">
+      <h5>Your Week in Review</h5>
+      <div class="review-stat">${takeaway}</div>
+      <div class="review-macros">
+        <div class="review-macro"><div class="review-pct p">${pPct}%</div><div class="review-lbl">Protein</div></div>
+        <div class="review-macro"><div class="review-pct c">${cPct}%</div><div class="review-lbl">Carbs</div></div>
+        <div class="review-macro"><div class="review-pct f">${fPct}%</div><div class="review-lbl">Fat</div></div>
+      </div>
+      <p class="review-note">A balanced split is roughly 25% protein / 50% carbs / 25% fat. Use what you learned — no need to keep logging forever.</p>
+    </div>`;
+  el('week-review').style.display = 'block';
 }
 
 async function _fetchSwaps(product, calories, protein_g, carbs_g, fat_g) {
