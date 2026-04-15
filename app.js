@@ -229,11 +229,20 @@ async function _fetchMarkets(lat, lng) {
   loading.style.display = 'flex';
 
   try {
-    const res = await fetch('https://data.cityofnewyork.us/resource/8vwk-6iz2.json?$limit=1000');
+    // Fetch only the latest year's data to avoid duplicate historical entries
+    const res = await fetch('https://data.cityofnewyork.us/resource/8vwk-6iz2.json?$limit=1000&$order=year%20DESC');
     const markets = await res.json();
 
+    // Dedupe by market name (keep the first/most recent occurrence)
+    const seen = new Set();
+    const unique = markets.filter(m => {
+      if (!m.marketname || seen.has(m.marketname)) return false;
+      seen.add(m.marketname);
+      return true;
+    });
+
     // Calculate distance and sort by nearest
-    const nearby = markets
+    const nearby = unique
       .filter(m => m.latitude && m.longitude)
       .map(m => ({
         ...m,
