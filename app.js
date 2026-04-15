@@ -335,6 +335,25 @@ function switchTab(tab) {
   el('tab-search').classList.toggle('active', tab === 'search');
 }
 
+async function _resizeImage(file, maxDim = 1024) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      // Output JPEG at 0.85 quality for good balance of size vs quality
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      resolve({ base64: dataUrl.split(',')[1], mediaType: 'image/jpeg' });
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+}
+
 async function handleLabelUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -344,26 +363,45 @@ async function handleLabelUpload(event) {
   preview.style.display = 'block';
   loading.style.display = 'flex';
 
-  const base64 = await new Promise(res => {
-    const reader = new FileReader();
-    reader.onload = e => res(e.target.result.split(',')[1]);
-    reader.readAsDataURL(file);
-  });
-
   try {
+    // Resize image before upload to stay under Vercel's 4.5MB body limit
+    const { base64, mediaType } = await _resizeImage(file);
+
     const response = await fetch('/api/scan-label', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ base64, mediaType: file.type })
+      body: JSON.stringify({ base64, mediaType })
     });
+
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}`);
+    }
+
     const data = await response.json();
-    const text = data.content?.[0]?.text || '{}';
-    const nutrition = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+    // Check for API errors (Anthropic error, missing content, etc.)
+    if (data.error) {
+      throw new Error(data.error.message || data.error);
+    }
+    const text = data.content?.[0]?.text;
+    if (!text) {
+      throw new Error('No text in response');
+    }
+
+    const cleaned = text.replace(/```json|```/g, '').trim();
+    const nutrition = JSON.parse(cleaned);
+
+    // Validate we got real data
+    if (!nutrition.product && nutrition.calories === undefined) {
+      throw new Error('Label could not be read');
+    }
+
     loading.style.display = 'none';
     _showNutrition(nutrition);
   } catch (e) {
     loading.style.display = 'none';
-    toast('Could not read label. Try the Search tab instead.');
+    console.error('Label scan error:', e);
+    toast('Could not read label. Try a clearer photo or use the Search tab.');
   }
 }
 
