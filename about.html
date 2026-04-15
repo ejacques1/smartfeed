@@ -203,6 +203,25 @@
     color: var(--text-muted);
     line-height: 1.65;
   }
+  /* ── Flyer counter ── */
+  .flyer-counter {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .flyer-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--gl);
+    margin-right: 4px;
+    letter-spacing: 0;
+  }
   /* ── Advisors grid ── */
   .advisors-grid {
     display: flex;
@@ -368,6 +387,7 @@
         <div class="team-name">Nischal Sharma</div>
         <div class="team-role">Feature Dev &amp; Bug Fixes</div>
         <div class="team-bio">Public Health student focused on nutrition and community wellness. Her own struggle with unhealthy eating during a packed class schedule inspired SmartFeed. She manages features, updates, and bug fixes to keep the app running smoothly.</div>
+        <div class="flyer-counter" data-src="nischal"><span class="flyer-num">—</span> flyer scans</div>
       </div>
 
       <!-- Jeanique Gordon -->
@@ -376,6 +396,7 @@
         <div class="team-name">Jeanique Gordon</div>
         <div class="team-role">Wellness &amp; Community</div>
         <div class="team-bio">Fourth-year Public Health and Nutrition student in York College's 4+1 accelerated program. Her passion for healthy cooking and active living &mdash; and seeing that not everyone has equal access &mdash; is what brought SmartFeed to life.</div>
+        <div class="flyer-counter" data-src="jeanique"><span class="flyer-num">—</span> flyer scans</div>
       </div>
 
       <!-- Guadalupe Luna -->
@@ -384,6 +405,7 @@
         <div class="team-name">Guadalupe Luna</div>
         <div class="team-role">Research &amp; Content</div>
         <div class="team-bio">Public Health major whose interest in the field grew during the COVID-19 pandemic after experiencing its impact firsthand. Inspired by her son's nutrition and mental health challenges, she focuses on making healthy eating easier and more accessible for busy students.</div>
+        <div class="flyer-counter" data-src="guadalupe"><span class="flyer-num">—</span> flyer scans</div>
       </div>
 
       <!-- Abiba Fofana -->
@@ -392,6 +414,7 @@
         <div class="team-name">Abiba Fofana</div>
         <div class="team-role">Feature Management</div>
         <div class="team-bio">Public Health major and advocate for health education, disease prevention, and community empowerment. She manages features, updates, and purchasing decisions for the app, bringing her skills in research and public health communication to the team.</div>
+        <div class="flyer-counter" data-src="abiba"><span class="flyer-num">—</span> flyer scans</div>
       </div>
     </div>
   </section>
@@ -432,6 +455,30 @@
   <p><a href="/terms">Terms & Privacy</a></p>
   <p>NYC SmartFeed &mdash; An initiative by students of <a href="https://www.york.cuny.edu" target="_blank">York College, CUNY</a></p>
 </footer>
+
+<!-- Live flyer scan counts from Supabase -->
+<script src="/supabase.min.js"></script>
+<script>
+(async function loadFlyerCounts() {
+  try {
+    const SUPABASE_URL = 'https://seyildptkabaukqkgahg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNleWlsZHB0a2FiYXVrcWtnYWhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MTUxMTEsImV4cCI6MjA4ODk5MTExMX0.UYZdZo7DS0WSQ_3yVR38lN8RUu8b-HOj6u7_prtlNKc';
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } });
+
+    const counters = document.querySelectorAll('.flyer-counter');
+    for (const el of counters) {
+      const src = el.dataset.src;
+      const { count } = await sb.from('flyer_visits')
+        .select('*', { count: 'exact', head: true })
+        .eq('source', src);
+      el.querySelector('.flyer-num').textContent = (count || 0).toLocaleString();
+    }
+  } catch (e) {
+    // Silently fail — counts are non-critical
+  }
+})();
+</script>
 
 </body>
 </html>

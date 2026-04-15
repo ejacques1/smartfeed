@@ -42,6 +42,57 @@ try {
   _updateNav();
 }
 
+// ═══════════════════════════════════════════════════════
+// FLYER VISIT TRACKING
+// ═══════════════════════════════════════════════════════
+(function logFlyerVisit() {
+  const params = new URLSearchParams(window.location.search);
+  const src = params.get('src');
+  if (!src) return;
+  // Only log once per session so reloads don't inflate the count
+  const key = `flyer_logged_${src}`;
+  try {
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, '1');
+  } catch (_) {}
+  sb.from('flyer_visits').insert({ source: src }).then(() => {}).catch(() => {});
+})();
+
+// ═══════════════════════════════════════════════════════
+// LIVE HOMEPAGE STATS
+// ═══════════════════════════════════════════════════════
+async function loadLiveStats() {
+  try {
+    const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const iso = sevenDaysAgo.toISOString();
+
+    // Total signups
+    const { count: signups } = await sb.from('profiles').select('*', { count: 'exact', head: true });
+
+    // Meals logged this week
+    const { count: meals } = await sb.from('food_log').select('*', { count: 'exact', head: true }).gte('logged_at', iso);
+
+    // Active 7-Day challenges (unique users with food_log entries in last 7 days)
+    const { data: recentEntries } = await sb.from('food_log').select('user_id').gte('logged_at', iso);
+    const activeUsers = new Set((recentEntries || []).map(e => e.user_id)).size;
+
+    const elSignups = document.getElementById('stat-signups');
+    const elMeals   = document.getElementById('stat-meals');
+    const elActive  = document.getElementById('stat-active');
+    if (elSignups) elSignups.textContent = (signups || 0).toLocaleString();
+    if (elMeals)   elMeals.textContent   = (meals || 0).toLocaleString();
+    if (elActive)  elActive.textContent  = (activeUsers || 0).toLocaleString();
+  } catch (e) {
+    // Silently fail — stats are non-critical
+  }
+}
+// Load stats when page is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadLiveStats);
+} else {
+  loadLiveStats();
+}
+
 function _updateNav() {
   const in_ = !!currentUser;
   document.getElementById('nav-auth').style.display  = in_ ? 'none' : 'flex';

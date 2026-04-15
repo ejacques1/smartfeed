@@ -163,6 +163,20 @@ footer{background:var(--ink);color:rgba(255,255,255,.4);border-top:1px solid rgb
 .swap-macros{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .swap-macros span{font-size:.72rem;background:var(--w);padding:2px 8px;border-radius:20px;color:var(--g);font-weight:600;border:1px solid var(--b)}
 .swap-why{font-size:.78rem;color:#5a6e60;line-height:1.5}
+/* ── Live Stats Section (homepage) ── */
+.live-stats{background:var(--gxl);padding:60px 24px;border-top:1px solid var(--b);border-bottom:1px solid var(--b)}
+.live-stats-inner{max-width:960px;margin:0 auto;text-align:center}
+.live-stats-label{font-size:.78rem;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
+.live-stats h2{font-family:"Syne",sans-serif;font-weight:800;font-size:2rem;margin-bottom:36px;color:var(--ink)}
+.live-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:800px;margin:0 auto}
+.live-stat{background:#fff;border:1.5px solid var(--b);border-radius:var(--rad);padding:28px 20px;box-shadow:var(--sh)}
+.live-stat-num{font-family:"Syne",sans-serif;font-weight:800;font-size:3rem;color:var(--g);line-height:1;margin-bottom:6px}
+.live-stat-lbl{font-size:.85rem;color:#5a6e60;font-weight:600}
+@media(max-width:768px){
+  .live-stats-grid{grid-template-columns:1fr;gap:14px}
+  .live-stats h2{font-size:1.5rem}
+  .live-stat-num{font-size:2.2rem}
+}
 /* ── 7-Day Challenge ── */
 .challenge-card{background:linear-gradient(135deg,var(--gxl) 0%,#fff 100%);border:1.5px solid var(--b)}
 .challenge-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
