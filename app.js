@@ -62,29 +62,19 @@ try {
 // LIVE HOMEPAGE STATS
 // ═══════════════════════════════════════════════════════
 async function loadLiveStats() {
+  // The raw count(*) queries return 0 to anonymous visitors because RLS hides
+  // every row from non-owners. Use a SECURITY DEFINER RPC that returns only
+  // aggregate counts — see supabase/get_smartfeed_stats.sql.
   try {
-    const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    const iso = sevenDaysAgo.toISOString();
-
-    // Total signups
-    const { count: signups } = await sb.from('profiles').select('*', { count: 'exact', head: true });
-
-    // Meals logged this week
-    const { count: meals } = await sb.from('food_log').select('*', { count: 'exact', head: true }).gte('logged_at', iso);
-
-    // Active 7-Day challenges (unique users with food_log entries in last 7 days)
-    const { data: recentEntries } = await sb.from('food_log').select('user_id').gte('logged_at', iso);
-    const activeUsers = new Set((recentEntries || []).map(e => e.user_id)).size;
-
+    const { data, error } = await sb.rpc('get_smartfeed_stats');
+    if (error || !data) return;
     const elSignups = document.getElementById('stat-signups');
     const elMeals   = document.getElementById('stat-meals');
     const elActive  = document.getElementById('stat-active');
-    if (elSignups) elSignups.textContent = (signups || 0).toLocaleString();
-    if (elMeals)   elMeals.textContent   = (meals || 0).toLocaleString();
-    if (elActive)  elActive.textContent  = (activeUsers || 0).toLocaleString();
-  } catch (e) {
-    // Silently fail — stats are non-critical
-  }
+    if (elSignups) elSignups.textContent = (data.signups || 0).toLocaleString();
+    if (elMeals)   elMeals.textContent   = (data.meals   || 0).toLocaleString();
+    if (elActive)  elActive.textContent  = (data.active  || 0).toLocaleString();
+  } catch (_) {}
 }
 // Load stats when page is ready
 if (document.readyState === 'loading') {
