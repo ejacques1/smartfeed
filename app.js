@@ -797,12 +797,14 @@ document.querySelectorAll('.modal-bg').forEach(bg =>
 );
 
 let _toastT;
-function toast(msg, dur = 3500) {
+function toast(msg, dur) {
   const t = el('toast');
+  const isError = /couldn'?t|could not|error|failed|denied|violates/i.test(msg);
   t.textContent = msg;
+  t.classList.toggle('error', isError);
   t.classList.add('show');
   clearTimeout(_toastT);
-  _toastT = setTimeout(() => t.classList.remove('show'), dur);
+  _toastT = setTimeout(() => t.classList.remove('show'), dur || (isError ? 8000 : 3500));
 }
 
 document.addEventListener('DOMContentLoaded', () => {

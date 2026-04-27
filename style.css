@@ -151,7 +151,8 @@ footer{background:var(--ink);color:rgba(255,255,255,.4);border-top:1px solid rgb
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .modal-actions{display:flex;gap:10px;margin-top:20px}
 .err{color:var(--r);font-size:.82rem;margin-top:8px;display:none}
-.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:12px 24px;border-radius:100px;font-size:.88rem;font-weight:500;box-shadow:var(--sh);transition:transform .3s ease;z-index:200;white-space:nowrap}
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:12px 24px;border-radius:18px;font-size:.88rem;font-weight:500;box-shadow:var(--sh);transition:transform .3s ease;z-index:200;max-width:min(90vw,520px);text-align:center;line-height:1.4;white-space:normal;word-wrap:break-word}
+.toast.error{background:#b00020}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .swap-header{margin-top:20px;padding-top:16px;border-top:1px solid var(--b)}
 .swap-header h4{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:2px}
