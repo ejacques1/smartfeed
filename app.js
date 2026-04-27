@@ -213,7 +213,7 @@ function _renderTargets() {
 }
 
 async function saveGoals() {
-  if (!currentUser) return;
+  if (!currentUser) { toast('Please log in first.'); return; }
   const age      = parseInt(val('g-age'))    || null;
   const gender   = val('g-gender');
   const weight   = parseFloat(val('g-weight')) || null;
@@ -222,7 +222,12 @@ async function saveGoals() {
   const { error } = await sb.from('profiles')
     .update({ age, gender, weight_lbs: weight, height_inches: height, activity_factor: activity })
     .eq('id', currentUser.id);
-  if (error) { showErr('g-err', error.message); return; }
+  if (error) {
+    console.error('saveGoals error:', error);
+    showErr('g-err', `Couldn't save: ${error.message}`);
+    toast(`Couldn't save goals: ${error.message}`);
+    return;
+  }
   userProfile = { ...userProfile, age, gender, weight_lbs: weight, height_inches: height, activity_factor: activity };
   _calcTargets(); _renderTargets();
   closeModal('modal-goals');
@@ -230,10 +235,15 @@ async function saveGoals() {
 }
 
 async function savePrefs() {
-  if (!currentUser) return;
-  await sb.from('profiles')
+  if (!currentUser) { toast('Please log in first.'); return; }
+  const { error } = await sb.from('profiles')
     .update({ dietary_preference: val('pref-diet'), weekly_budget: val('pref-budget') })
     .eq('id', currentUser.id);
+  if (error) {
+    console.error('savePrefs error:', error);
+    toast(`Couldn't save preferences: ${error.message}`);
+    return;
+  }
   toast('Preferences saved ✅');
 }
 
@@ -576,7 +586,11 @@ async function logFood(n) {
     serving_size: n.serving_size || 'per serving'
   };
   const { error } = await sb.from('food_log').insert(entry);
-  if (error) { toast('Could not save to log. Try again.'); return; }
+  if (error) {
+    console.error('logFood error:', error);
+    toast(`Couldn't add to log: ${error.message}`);
+    return;
+  }
   toast('✅ Added to today\'s log!');
 }
 
