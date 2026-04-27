@@ -138,7 +138,12 @@ async function signUp() {
   if (!email || !password) { showErr('su-err', 'Email and password required.'); return; }
   if (!document.getElementById('su-terms').checked) { showErr('su-err', 'Please agree to the Terms of Service & Privacy Policy.'); return; }
   const { data, error } = await sb.auth.signUp({ email, password });
-  if (error) { showErr('su-err', error.message); return; }
+  if (error) {
+    console.error('signUp error:', error);
+    showErr('su-err', error.message);
+    toast(`Couldn't sign up: ${error.message}`);
+    return;
+  }
   if (data.user) {
     await sb.from('profiles').upsert({
       id: data.user.id, email, age, gender,
@@ -153,7 +158,12 @@ async function signUp() {
 async function signIn() {
   const email = val('li-email'), password = val('li-pw');
   const { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) { showErr('li-err', error.message); return; }
+  if (error) {
+    console.error('signIn error:', error);
+    showErr('li-err', error.message);
+    toast(`Couldn't log in: ${error.message}`);
+    return;
+  }
   closeModal('modal-login');
   toast('Welcome back! 👋');
 }
