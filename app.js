@@ -159,14 +159,20 @@ async function signIn() {
 }
 
 async function signOut() {
-  await sb.auth.signOut();
+  // Update UI synchronously first — if sb.auth.signOut() hangs or throws
+  // (network issues, blocked storage, stale token), the user still sees the
+  // logged-out state immediately.
   currentUser = null; userProfile = null; userFavorites = []; dailyTargets = null;
   el('profile-section').style.display = 'none';
   document.querySelector('.hero').style.display = 'flex';
-  // Call _updateNav directly — onAuthStateChange doesn't fire when storage is
-  // blocked (iOS private browsing), leaving the logged-in nav visible.
   _updateNav();
   toast('Signed out.');
+  try { await sb.auth.signOut(); } catch (e) { console.warn('signOut error:', e); }
+  // Belt-and-suspenders: nuke any persisted Supabase session so a refresh
+  // doesn't restore the user.
+  try {
+    Object.keys(localStorage).forEach(k => { if (k.startsWith('sb-')) localStorage.removeItem(k); });
+  } catch (_) {}
 }
 
 // ═══════════════════════════════════════════════════════
