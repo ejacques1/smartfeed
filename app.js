@@ -163,6 +163,9 @@ async function signOut() {
   currentUser = null; userProfile = null; userFavorites = []; dailyTargets = null;
   el('profile-section').style.display = 'none';
   document.querySelector('.hero').style.display = 'flex';
+  // Call _updateNav directly — onAuthStateChange doesn't fire when storage is
+  // blocked (iOS private browsing), leaving the logged-in nav visible.
+  _updateNav();
   toast('Signed out.');
 }
 
